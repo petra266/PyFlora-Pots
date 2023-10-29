@@ -5,20 +5,14 @@ import sqlite3
 
 os.chdir('PyFlora Pots')
 
-
-def convert_image_to_blob(image_path):
-    with open(image_path, 'rb') as file:
-        blob_data = file.read()
-    return blob_data
-
-
 DB_NAME = 'Database_plants_lexicon.db'
+
+# create sql queries
 
 QUERY_CREATE = '''
 CREATE TABLE IF NOT EXISTS Database_plants_lexicon (
     id INTEGER PRIMARY KEY,
     plant_name VARCHAR(50) NOT NULL UNIQUE,
-    photo BLOB NOT NULL UNIQUE,
     optimal_humidity INTEGER NOT NULL CHECK 
         (optimal_humidity >= 0 AND optimal_humidity <= 100),
     optimal_ph INTEGER NOT NULL CHECK 
@@ -31,20 +25,13 @@ CREATE TABLE IF NOT EXISTS Database_plants_lexicon (
 
 QUERY_INSERT = '''
 INSERT INTO Database_plants_lexicon 
-(plant_name, photo, optimal_humidity, 
+(plant_name, optimal_humidity, 
 optimal_ph, max_salinity, optimal_light, optimal_temperature)
-VALUES (?, ?, ?, ?, ?, ?, ?)
+VALUES (?, ?, ?, ?, ?, ?)
 '''
-
-# setup to keep images in a separate folder
-IMAGES_FOLDER = 'Images'
-if not os.path.exists(IMAGES_FOLDER):
-    print('Error: The images folder does not exist. Table not created.')
-    SystemExit(1)
 
 INSERT_DICT = [
     {'plant_name': 'Basil (Ocimum basilicum)',
-     'photo': convert_image_to_blob(os.path.join(IMAGES_FOLDER, 'Basil.jpg')),
      'optimal_humidity': 60,
      'optimal_ph': 6,
      'max_salinity': 2,
@@ -52,7 +39,6 @@ INSERT_DICT = [
      'optimal_temperature': 24
      },
     {'plant_name': 'Hibiscus (Hibiscus rosa-sinensis)',
-     'photo': convert_image_to_blob(os.path.join(IMAGES_FOLDER, 'Hibiscus.jpg')),
      'optimal_humidity': 65,
      'optimal_ph': 6,
      'max_salinity': 2,
@@ -63,7 +49,7 @@ INSERT_DICT = [
 
 INSERT_LIST = []
 for i in INSERT_DICT:
-    plant = (i['plant_name'], i['photo'], i['optimal_humidity'], i['optimal_ph'],
+    plant = (i['plant_name'], i['optimal_humidity'], i['optimal_ph'],
              i['max_salinity'], i['optimal_light'], i['optimal_temperature'])
     INSERT_LIST.append(plant)
 
