@@ -6,6 +6,7 @@ os.chdir('PyFlora Pots')
 
 root = tk.Tk()
 root.title("PyFlora Pots")
+root.geometry('1200x800')
 
 
 class PyFloraPot:
@@ -41,21 +42,16 @@ def update_pot_list():
         print('Data retrieving unsucessful. Error: ', e)
 
 
-# nr_pots = len(PyFlora_pots_names)
-row = 1
-column = 1
+PyFloraPot_list = update_pot_list()
 
+for i in range(0, PyFloraPot.PyFloraPots_count):
+    button = tk.Button(root, text=PyFloraPot_list[i].pot_name)
+    button.pack()
 
-def add_new_pot():
-    if column % 2 == 0:
-        column = 1
-        row += 1
-    else:
-        column = 2
-
-    button = tk.Button(root, text="New button")
-
+add_button = tk.Button(root, text="Add new pot")
+add_button.pack()
 
 exit_button = tk.Button(root, text="Quit", command=root.destroy)
+exit_button.pack()
 
 root.mainloop()
