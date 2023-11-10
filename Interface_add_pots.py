@@ -46,18 +46,20 @@ class InterfaceAddPots:
     def validate_choices(self):
         """Validates choices when creating a new PyFlora pot."""
         # validate the chosen pot_name is available
+        validation = True
+
         for i in range(0, PyFloraPot.count_pots):
             if self.new_pot.get() == PyFloraPot.list_pots[i].pot_name:
-                validation = 0
+                validation = False
                 messagebox.showwarning(title='PyFlora pot already in use!',
                                        message='Please choose another name for the PyFlora pot.')
         # check a plant is chosen from the menu
         if self.chosen_plant.get() == self.DEFAULT_PLANT:
-            validation = 0
+            validation = False
             messagebox.showwarning(title='No plant chosen!',
                                    message='Please choose a plant from the plant menu.\n\nNote: If the plant you have in mind is not on the list, add it to the plant lexicon.')
         # return validation result
-        if validation == 0:
+        if validation == False:
             return False
         else:
             return True
