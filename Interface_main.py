@@ -1,12 +1,9 @@
 import os
 import tkinter as tk
 import sqlite3
+from tkinter import messagebox
 
-os.chdir('PyFlora Pots')
-
-root = tk.Tk()
-root.title("PyFlora Pots")
-root.geometry('1200x800')
+from Interface_add_pots import *
 
 
 class PyFloraPot:
@@ -39,19 +36,32 @@ def update_pot_list():
             return PyFloraPot_list
 
     except sqlite3.Error as e:
-        print('Data retrieving unsucessful. Error: ', e)
+        messagebox.showerror(title='Error in retrieving data',
+                             message='Data retrieving unsucessful. Error: ' + e)
 
 
-PyFloraPot_list = update_pot_list()
+class InterfaceMain:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title("PyFlora Pots")
+        self.root.geometry('1200x800')
 
-for i in range(0, PyFloraPot.PyFloraPots_count):
-    button = tk.Button(root, text=PyFloraPot_list[i].pot_name)
-    button.pack()
+        PyFloraPot_list = update_pot_list()
 
-add_button = tk.Button(root, text="Add new pot")
-add_button.pack()
+        for i in range(0, PyFloraPot.PyFloraPots_count):
+            button = tk.Button(self.root, text=PyFloraPot_list[i].pot_name)
+            button.pack()
 
-exit_button = tk.Button(root, text="Quit", command=root.destroy)
-exit_button.pack()
+        add_button = tk.Button(self.root, text="Add new pot",
+                               command=self.launch_InterfaceAddPots)
+        add_button.pack()
 
-root.mainloop()
+        exit_button = tk.Button(self.root, text="Quit",
+                                command=self.root.destroy)
+        exit_button.pack()
+
+    def launch_InterfaceAddPots(self):
+        InterfaceAddPots(self.root).toplevel_add_pots.mainloop()
+
+
+InterfaceMain().root.mainloop()
