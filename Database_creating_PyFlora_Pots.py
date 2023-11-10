@@ -7,6 +7,8 @@ os.chdir('PyFlora Pots')
 
 DB_NAME = 'Database_PyFlora_Pots.db'
 
+# Create sql queries
+
 QUERY_CREATE = '''
 CREATE TABLE IF NOT EXISTS Database_PyFlora_Pots (
     id INTEGER PRIMARY KEY,
@@ -43,7 +45,7 @@ except sqlite3.Error as e:
 
 
 # TO DELETE AT THE END
-# Insert plants into the lexicon
+# Insert test plants into the lexicon
 try:
     cursor.execute(QUERY_INSERT)
     sqlite_connection.commit()
