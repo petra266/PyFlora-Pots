@@ -37,7 +37,6 @@ class InterfaceAddPots:
 
         except sqlite3.Error as e:
             print('Data retrieving unsucessful. Error: ', e)
-            print(os.getcwd)
             messagebox.showerror(title='Error in retrieving data!',
                                  message='Data retrieving unsucessful. Error: ' + str(e) + "\nPlease restart the application")
             self.toplevel_add_pots.destroy()
@@ -52,6 +51,10 @@ class InterfaceAddPots:
                 validation = False
                 messagebox.showwarning(title='PyFlora pot already in use!',
                                        message='Please choose another name for the PyFlora pot.')
+            if self.new_pot.get() == "":
+                validation = False
+                messagebox.showwarning(title='No name given!',
+                                       message='Please choose a name for the PyFlora pot.')
         # check a plant is chosen from the menu
         if self.chosen_plant.get() == self.DEFAULT_PLANT:
             validation = False
@@ -64,14 +67,54 @@ class InterfaceAddPots:
             return True
 
     def add_new_pot(self):
-        """Button fuction - adds a new PyFlora pot to the database."""
+        """Button fuction - adds a new PyFlora pot to Database_PlyFlora_Pots."""
+        
+        # activate validation function
+        self.validate_choices()
 
-        if not self.validate_choices():
-            print("Not validated")
-        else:
-            print("Validated")
+        # retrieve data on the selected plan from the lexicon 
+        DB_NAME = 'Database_plants_lexicon.db'
+        QUERY_GET_CHOSEN_PLANT = 'SELECT * FROM Database_plants_lexicon where plant_name ='
 
-        # Create text variables for PyFlora pot specifics
+        try:
+            with sqlite3.connect(DB_NAME) as sql_connection:
+                cursor = sql_connection.cursor()
+
+                cursor.execute(QUERY_GET_CHOSEN_PLANT + '"{}"'.format(self.chosen_plant.get()))
+                data = cursor.fetchall()
+
+        except sqlite3.Error as e:
+            print('Data retrieving unsucessful. Error: ', e)
+            messagebox.showerror(title='Error in retrieving data!',
+                                 message='Data retrieving unsucessful. Error: ' + str(e) + "\n\nPlease restart the application")
+            self.toplevel_add_pots.destroy()
+
+        # insert the new pot into Database_PyFlora_Pots
+
+        DB_NAME = 'Database_PyFlora_Pots.db'
+
+        QUERY_INSERT_POT = '''
+        INSERT INTO Database_PyFlora_Pots (PyFlora_pot_name,
+            plant_name, optimal_humidity, optimal_ph,
+            max_salinity, optimal_light, optimal_temperature)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        '''
+
+        new_pot = (self.new_pot.get(), data[0][1], data[0][2], data[0][3], data[0][4], data[0][5], data[0][6])
+
+        try:
+            with sqlite3.connect(DB_NAME) as sql_connection:
+                cursor = sql_connection.cursor()
+                query = QUERY_INSERT_POT
+                cursor.execute(query, new_pot)
+                sql_connection.commit()
+                print("Successfully inserted into the database.")
+
+        except sqlite3.Error as e:
+            print('Inserting new pot unsuccessful. Error: ', e)
+            messagebox.showerror(title='Error while adding a new PyFlora Pot!',
+                                 message='New PyFlora Pot not added due to error: ' + str(e) + "\n\nPlease try again or restart the application")
+            self.toplevel_add_pots.destroy()
 
     def interface_elements(self):
 
