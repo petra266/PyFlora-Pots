@@ -1,9 +1,6 @@
 """Creating the PyFlora Pots database"""
 
-import os
 import sqlite3
-
-os.chdir('PyFlora Pots')
 
 DB_NAME = 'Database_PyFlora_Pots.db'
 

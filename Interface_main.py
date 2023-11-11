@@ -1,12 +1,9 @@
-import os
 import tkinter as tk
 import sqlite3
 from tkinter import messagebox
 
 from PyFlora_class import PyFloraPot
-from Interface_add_pots import InterfaceAddPots
-
-# os.chdir('PyFlora Pots')
+from Interface_add_pots import *
 
 
 class InterfaceMain:

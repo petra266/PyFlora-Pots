@@ -1,11 +1,8 @@
-import os
 import sqlite3
 import tkinter as tk
 from tkinter import messagebox
 from datetime import datetime, time
 
-
-os.chdir('PyFlora Pots')
 
 DB_NAME = 'Database_users.db'
 QUERY_GET_PASSWORD = 'SELECT password, firstname FROM Database_users WHERE username ='

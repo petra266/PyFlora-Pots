@@ -1,9 +1,6 @@
 """Creating the user database with 1 user"""
 
-import os
 import sqlite3
-
-os.chdir('PyFlora Pots')
 
 DB_NAME = 'Database_users.db'
 

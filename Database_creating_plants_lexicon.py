@@ -1,9 +1,6 @@
 """Creating the plants lexicon with 10 plants"""
 
-import os
 import sqlite3
-
-os.chdir('PyFlora Pots')
 
 DB_NAME = 'Database_plants_lexicon.db'
 

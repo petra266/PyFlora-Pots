@@ -1,13 +1,10 @@
-import os
+""" GUI for adding new PyFlora Pots """
+
 import tkinter as tk
 import sqlite3
 from tkinter import messagebox
 
 from PyFlora_class import PyFloraPot
-# from Interface_main import PyFloraPot
-
-
-os.chdir('PyFlora Pots')
 
 
 class InterfaceAddPots:
@@ -40,8 +37,10 @@ class InterfaceAddPots:
 
         except sqlite3.Error as e:
             print('Data retrieving unsucessful. Error: ', e)
+            print(os.getcwd)
             messagebox.showerror(title='Error in retrieving data!',
-                                 message='Data retrieving unsucessful. Error: ' + str(e))
+                                 message='Data retrieving unsucessful. Error: ' + str(e) + "\nPlease restart the application")
+            self.toplevel_add_pots.destroy()
 
     def validate_choices(self):
         """Validates choices when creating a new PyFlora pot."""
