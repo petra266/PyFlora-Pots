@@ -9,7 +9,7 @@ DB_NAME = 'Database_PyFlora_Pots.db'
 QUERY_CREATE = '''
 CREATE TABLE IF NOT EXISTS Database_PyFlora_Pots (
     id INTEGER PRIMARY KEY,
-    PyFlora_pot_name VARCHAR(20) NOT NULL UNIQUE,
+    pot_name VARCHAR(20) NOT NULL UNIQUE,
     plant_name VARCHAR(50) NOT NULL,
     optimal_humidity INTEGER NOT NULL CHECK 
         (optimal_humidity >= 0 AND optimal_humidity <= 100),
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS Database_PyFlora_Pots (
 '''
 
 QUERY_INSERT = '''
-INSERT INTO Database_PyFlora_Pots (PyFlora_pot_name,
+INSERT INTO Database_PyFlora_Pots (pot_name,
     plant_name, optimal_humidity, optimal_ph,
     max_salinity, optimal_light, optimal_temperature)
 VALUES ("Balcony", "Basil", 50, 7, 200, 500, 22)

@@ -4,7 +4,7 @@ from tkinter import messagebox
 
 from PyFlora_class import PyFloraPot
 from Interface_add_pots import *
-
+from Interface_open_pot import *
 
 class InterfaceMain:
     def __init__(self):
@@ -31,7 +31,8 @@ class InterfaceMain:
                 button_row = i - 1
                 button_column = 2
 
-            button = tk.Button(self.root, text=PyFloraPot_list[i].pot_name)
+            pot_name = PyFloraPot_list[i].pot_name
+            button = tk.Button(self.root, text=pot_name, command=lambda selected_name=pot_name: self.launch_InterfaceOpenPot(selected_name))
             button.grid(row=button_row, column=button_column)
 
         add_button = tk.Button(self.root, text="Add new pot",
@@ -42,11 +43,16 @@ class InterfaceMain:
                                 command=self.root.destroy)
         exit_button.grid(row=button_row + 2, column=1, columnspan=2)
 
-
-
     def launch_InterfaceAddPots(self):
         interface_add_pots = InterfaceAddPots(self.root)
         self.root.wait_window(interface_add_pots.toplevel_add_pots)
+        self.create_buttons()
+
+    def launch_InterfaceOpenPot(self, selected_name):
+        # note the selected pot in the PyFloraPot class
+        PyFloraPot.SELECTED_POT = selected_name
+        interface_open_pot = InterfaceOpenPot(self.root)
+        self.root.wait_window(interface_open_pot.toplevel_open_pot)
         self.create_buttons()
 
 InterfaceMain().root.mainloop()

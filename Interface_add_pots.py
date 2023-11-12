@@ -100,7 +100,7 @@ class InterfaceAddPots:
             DB_NAME = 'Database_PyFlora_Pots.db'
 
             QUERY_INSERT_POT = '''
-            INSERT INTO Database_PyFlora_Pots (PyFlora_pot_name,
+            INSERT INTO Database_PyFlora_Pots (pot_name,
                 plant_name, optimal_humidity, optimal_ph,
                 max_salinity, optimal_light, optimal_temperature)
             VALUES (?, ?, ?, ?, ?, ?, ?)

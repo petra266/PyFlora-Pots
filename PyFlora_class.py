@@ -5,6 +5,7 @@ from tkinter import messagebox
 
 class PyFloraPot:
 
+    SELECTED_POT = ""
     count_pots = 0
 
     def __init__(self, pot_name, plant_name):
@@ -18,7 +19,7 @@ class PyFloraPot:
         PyFloraPot.list_pots = []
 
         DB_NAME = 'Database_PyFlora_Pots.db'
-        QUERY_GET_ALL_POTS = 'SELECT PyFlora_pot_name, plant_name FROM Database_PyFlora_Pots'
+        QUERY_GET_ALL_POTS = 'SELECT pot_name, plant_name FROM Database_PyFlora_Pots'
 
         try:
             with sqlite3.connect(DB_NAME) as sql_connection:
