@@ -13,7 +13,8 @@ class PyFloraPot:
         PyFloraPot.count_pots += 1
 
     def update_pot_list(self):
-
+        
+        PyFloraPot.count_pots = 0
         PyFloraPot.list_pots = []
 
         DB_NAME = 'Database_PyFlora_Pots.db'

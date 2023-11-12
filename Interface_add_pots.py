@@ -76,8 +76,7 @@ class InterfaceAddPots:
         # activate validation function
         validation = self.validate_choices()
 
-        # retrieve data on the selected plan from the lexicon 
-        
+        # retrieve data on the selected plant from the lexicon 
         if validation:
             DB_NAME = 'Database_plants_lexicon.db'
             QUERY_GET_CHOSEN_PLANT = 'SELECT * FROM Database_plants_lexicon where plant_name ='
@@ -122,7 +121,7 @@ class InterfaceAddPots:
                 messagebox.showerror(title='Error while adding a new PyFlora Pot!',
                                     message='New PyFlora Pot not added due to error: ' + str(e) + "\n\nPlease try again or restart the application",
                                     parent=self.toplevel_add_pots)
-                self.toplevel_add_pots.destroy()
+            self.toplevel_add_pots.destroy()
 
     def interface_elements(self):
 
@@ -158,6 +157,6 @@ class InterfaceAddPots:
             self.toplevel_add_pots, text="Let's plant!!", command=self.add_new_pot)
         add_pot_button.grid(row=3, columnspan=3)
 
-        exit_button = tk.Button(self.toplevel_add_pots, text="Quit",
+        back_button = tk.Button(self.toplevel_add_pots, text="Back",
                                 command=self.toplevel_add_pots.destroy)
-        exit_button.grid(row=1000, columnspan=3)
+        back_button.grid(row=1000, columnspan=3)

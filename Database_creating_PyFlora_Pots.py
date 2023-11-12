@@ -10,7 +10,7 @@ QUERY_CREATE = '''
 CREATE TABLE IF NOT EXISTS Database_PyFlora_Pots (
     id INTEGER PRIMARY KEY,
     PyFlora_pot_name VARCHAR(20) NOT NULL UNIQUE,
-    plant_name VARCHAR(50) NOT NULL UNIQUE,
+    plant_name VARCHAR(50) NOT NULL,
     optimal_humidity INTEGER NOT NULL CHECK 
         (optimal_humidity >= 0 AND optimal_humidity <= 100),
     optimal_ph INTEGER NOT NULL CHECK 
