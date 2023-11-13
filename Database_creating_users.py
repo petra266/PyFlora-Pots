@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS Database_users (
     id INTEGER PRIMARY KEY,
     firstname VARCHAR(50) NOT NULL,
     lastname VARCHAR(50) NOT NULL,
-    username VARCHAR(150) NOT NULL,
-    password VARCHAR(150) NOT NULL
+    username VARCHAR(50) NOT NULL,
+    password VARCHAR(50) NOT NULL
 );
 '''
 QUERY_INSERT = '''

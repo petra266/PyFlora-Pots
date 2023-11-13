@@ -11,14 +11,13 @@ class InterfaceOpenPot:
 
     def __init__(self, root):
         self.toplevel_open_pot = tk.Toplevel(root)
-        self.toplevel_open_pot.title("PyFlora Pots - ", )
+        self.toplevel_open_pot.title("PyFlora Pots - ", PyFloraPot.SELECTED_POT)
         self.toplevel_open_pot.geometry('1200x800')
 
         #retrieve pot information and save it into a class property
         self.POT_INFO = self.retrieve_pot_info()
     
         self.interface_elements()
-        print("Rječnk2: pot name", self.POT_INFO['pot_name'])
 
     def retrieve_pot_info(self):
         """ Retrieve all data from the Database_PyFlora_Pots and return it as a dictionary"""
