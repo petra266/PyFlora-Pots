@@ -11,7 +11,7 @@ class InterfaceOpenPot:
 
     def __init__(self, root):
         self.toplevel_open_pot = tk.Toplevel(root)
-        self.toplevel_open_pot.title("PyFlora Pots - ", PyFloraPot.SELECTED_POT)
+        self.toplevel_open_pot.title("PyFlora Pots - " + PyFloraPot.SELECTED_POT)
         self.toplevel_open_pot.geometry('1200x800')
 
         #retrieve pot information and save it into a class property
@@ -31,13 +31,14 @@ class InterfaceOpenPot:
                 cursor.execute(QUERY_GET_POT + '"{}"'.format(PyFloraPot.SELECTED_POT))
                 data = cursor.fetchall()[0]
                 POT_INFO = {              
-                    'pot_name' : data[1],
+                    'pot_name': data[1],
                     'plant_name': data[2],
                     'optimal_humidity': data[3],
                     'optimal_ph': data[4],
                     'max_salinity': data[5],
                     'optimal_light': data[6],
-                    'optimal_temperature': data[7]
+                    'optimal_temperature': data[7],
+                    'no_measurements': data[8]
                     }
                 print("PyFlora Pot information retrived.")
                 return POT_INFO
@@ -70,7 +71,13 @@ class InterfaceOpenPot:
                                  message='Data retrieving unsucessful. Error: ' + str(e) + "\nPlease restart the application",
                                  parent=self.toplevel_open_pot)
         self.toplevel_open_pot.destroy()       
-    
+
+    def sync(self):
+        PyFloraPot.sync(PyFloraPot, self.POT_INFO['pot_name'])
+        '''messagebox.showerror(title='Error while attempting to sync!',
+                    message='PyFlora Pot syncing unsuccessful: ' + str(e) + "\n\nPlease try again or restart the application.",
+                    parent=self.toplevel_open_pot)'''
+
     def interface_elements(self):
         pot_name_label = tk.Label(self.toplevel_open_pot, text="PyFlora Pot Name:   " + self.POT_INFO['pot_name'])
         pot_name_label.grid(row=1, column=1)
@@ -78,9 +85,12 @@ class InterfaceOpenPot:
         plant_name_label = tk.Label(self.toplevel_open_pot, text="Plant name:   " + self.POT_INFO['plant_name'])
         plant_name_label.grid(row=2, column=1)
 
+        sync_button = tk.Button(self.toplevel_open_pot, text="Sync only this pot", command=self.sync)
+        sync_button.grid(row=3, column=1)
+
         delete_button = tk.Button(self.toplevel_open_pot, text="Remove pot...", command=self.delete_pot)
         delete_button.grid(row=1000, column=2)
 
         back_button = tk.Button(self.toplevel_open_pot, text="Back",
                                 command=self.toplevel_open_pot.destroy)
-        back_button.grid(row=1000, columnspan=3)        
+        back_button.grid(row=1000, column=0)

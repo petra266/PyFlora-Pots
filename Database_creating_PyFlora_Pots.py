@@ -17,15 +17,16 @@ CREATE TABLE IF NOT EXISTS Database_PyFlora_Pots (
         (optimal_ph >= 0 AND optimal_ph <= 14),
     max_salinity INTEGER NOT NULL CHECK (max_salinity >= 0),
     optimal_light INTEGER NOT NULL CHECK (optimal_light >= 0),
-    optimal_temperature INTEGER NOT NULL
+    optimal_temperature INTEGER NOT NULL,
+    no_measurements INTEGER NOT NULL
     );
 '''
 
 QUERY_INSERT = '''
 INSERT INTO Database_PyFlora_Pots (pot_name,
     plant_name, optimal_humidity, optimal_ph,
-    max_salinity, optimal_light, optimal_temperature)
-VALUES ("Balcony", "Basil", 50, 7, 200, 500, 22)
+    max_salinity, optimal_light, optimal_temperature, no_measurements)
+VALUES ("Balcony", "Basil", 50, 7, 200, 500, 22, 0)
 '''
 
 # Create the empty PyPots database

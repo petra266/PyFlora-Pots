@@ -47,9 +47,12 @@ class InterfaceMain:
                             command=self.launch_InterfaceAddPots)
         add_button.grid(row=button_row + 1 + HEADER, column=1, columnspan=2)
 
-        exit_button = tk.Button(self.root, text="Quit",
+        sync_button = tk.Button(self.root, text="Sync", command=self.sync)
+        sync_button.grid(row=button_row + 2 + HEADER, column=1, columnspan=2)
+
+        logout_button = tk.Button(self.root, text="Log Out",
                                 command=self.root.destroy)
-        exit_button.grid(row=button_row + 2 + HEADER, column=1, columnspan=2)
+        logout_button.grid(row=1000, column=1, columnspan=2)
 
     def launch_InterfaceUserAccount(self):
         InterfaceUserAccount(self.root)
@@ -66,4 +69,10 @@ class InterfaceMain:
         self.root.wait_window(interface_open_pot.toplevel_open_pot)
         self.create_buttons()
 
+    def sync(self):
+        pots_to_sync = PyFloraPot.all_pot_names
+        PyFloraPot.sync(PyFloraPot, pots_to_sync)
+        '''messagebox.showerror(title='Error while attempting to sync!',
+                    message='PyFlora Pot syncing unsuccessful: ' + str(e) + "\n\nPlease try again or restart the application.",
+                    parent=self.toplevel_open_pot)'''
 InterfaceMain().root.mainloop()

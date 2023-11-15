@@ -38,7 +38,7 @@ class InterfaceAddPots:
         except sqlite3.Error as e:
             print('Data retrieving unsucessful. Error: ', e)
             messagebox.showerror(title='Error in retrieving data!',
-                                 message='Data retrieving unsucessful. Error: ' + str(e) + "\nPlease restart the application",
+                                 message='Data retrieving unsucessful. Error: ' + str(e) + "\nPlease restart the application.",
                                  parent=self.toplevel_add_pots)
             self.toplevel_add_pots.destroy()
 
@@ -91,7 +91,7 @@ class InterfaceAddPots:
             except sqlite3.Error as e:
                 print('Data retrieving unsucessful. Error: ', e)
                 messagebox.showerror(title='Error in retrieving data!',
-                                    message='Data retrieving unsucessful. Error: ' + str(e) + "\n\nPlease restart the application",
+                                    message='Data retrieving unsucessful. Error: ' + str(e) + "\n\nPlease restart the application.",
                                     parent=self.toplevel_add_pots)
                 self.toplevel_add_pots.destroy()
 
@@ -102,11 +102,11 @@ class InterfaceAddPots:
             QUERY_INSERT_POT = '''
             INSERT INTO Database_PyFlora_Pots (pot_name,
                 plant_name, optimal_humidity, optimal_ph,
-                max_salinity, optimal_light, optimal_temperature)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+                max_salinity, optimal_light, optimal_temperature, no_measurements)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             '''
 
-            new_pot = (self.new_pot.get(), data[0][1], data[0][2], data[0][3], data[0][4], data[0][5], data[0][6])
+            new_pot = (self.new_pot.get(), data[0][1], data[0][2], data[0][3], data[0][4], data[0][5], data[0][6], 0)
 
             try:
                 with sqlite3.connect(DB_NAME) as sql_connection:
@@ -119,7 +119,7 @@ class InterfaceAddPots:
             except sqlite3.Error as e:
                 print('Inserting new pot unsuccessful. Error: ', e)
                 messagebox.showerror(title='Error while adding a new PyFlora Pot!',
-                                    message='New PyFlora Pot not added due to error: ' + str(e) + "\n\nPlease try again or restart the application",
+                                    message='New PyFlora Pot not added due to error: ' + str(e) + "\n\nPlease try again or restart the application.",
                                     parent=self.toplevel_add_pots)
             self.toplevel_add_pots.destroy()
 
