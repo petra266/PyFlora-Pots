@@ -39,7 +39,8 @@ class PyFloraPot:
                     PyFloraPot.all_pot_names.append(pot[0])
                     all_no_measurements.append(pot[2])
                 
-                PyFloraPot.max_no_measurements = max(all_no_measurements)
+                if PyFloraPot.count_pots > 0:
+                    PyFloraPot.max_no_measurements = max(all_no_measurements)
                 print("All PyFlora Pot names retrived.")
                 return PyFloraPot.list_pots
 
@@ -100,6 +101,8 @@ class PyFloraPot:
                 new_measurement_no = pot.no_measurements+1
                 # get number of measurement for the selected pot 
                 # compare it to the highest measurement to see whether new column is necessary
+                print('New m no: ', new_measurement_no)
+                print('Max m no: ', PyFloraPot.max_no_measurements)
                 if new_measurement_no > PyFloraPot.max_no_measurements:
                     QUERIES_ADD_COLUMNS = [
                         f'humidity{new_measurement_no} FLOAT',
@@ -116,9 +119,12 @@ class PyFloraPot:
                                 cursor.execute(f'ALTER TABLE Database_PyFlora_Pots ADD {column}')
                             sql_connection.commit()
                             print("Successfully created new columns in the database.")
+                            
+                            PyFloraPot.max_no_measurements += 1
 
-                    except sqlite3.Error as e1:
+                    except sqlite3.Error as e:
                         print('Creating new columns in the database unsuccessful. Error: ', e)
+                        return e
                         
                 # generate measurements 
                 all_measurements = self.generate_measurements(PyFloraPot)

@@ -22,13 +22,6 @@ CREATE TABLE IF NOT EXISTS Database_PyFlora_Pots (
     );
 '''
 
-QUERY_INSERT = '''
-INSERT INTO Database_PyFlora_Pots (pot_name,
-    plant_name, optimal_humidity, optimal_ph,
-    max_salinity, optimal_light, optimal_temperature, no_measurements)
-VALUES ("Balcony", "Basil", 50, 7, 200, 500, 22, 0)
-'''
-
 # Create the empty PyPots database
 try:
     sqlite_connection = sqlite3.connect(DB_NAME)
@@ -40,20 +33,6 @@ try:
 except sqlite3.Error as e:
     print("Execution unsuccessful. Error when creating the database: ", e)
     SystemExit(1)
-
-
-# TO DELETE AT THE END
-# Insert test plants into the lexicon
-try:
-    cursor.execute(QUERY_INSERT)
-    sqlite_connection.commit()
-    print("Successfully inserted into the database.")
-    cursor.close()
-
-except sqlite3.Error as e:
-    print("Error when inserting into the database: ", e)
-    SystemExit(1)
-# TO DELETE AT THE END
 
 
 # Close the connection to the database

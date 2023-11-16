@@ -73,10 +73,11 @@ class InterfaceOpenPot:
         self.toplevel_open_pot.destroy()       
 
     def sync(self):
-        PyFloraPot.sync(PyFloraPot, self.POT_INFO['pot_name'])
-        '''messagebox.showerror(title='Error while attempting to sync!',
-                    message='PyFlora Pot syncing unsuccessful: ' + str(e) + "\n\nPlease try again or restart the application.",
-                    parent=self.toplevel_open_pot)'''
+        syncing_error = PyFloraPot.sync(PyFloraPot, self.POT_INFO['pot_name']) # returns an error message if syncing unsucessful
+        if syncing_error:
+            messagebox.showerror(title='Error while attempting to sync!',
+                    message='PyFlora Pot syncing unsuccessful: ' + str(syncing_error) + "\n\nPlease try again or restart the application.",
+                    parent=self.toplevel_open_pot)
 
     def interface_elements(self):
         pot_name_label = tk.Label(self.toplevel_open_pot, text="PyFlora Pot Name:   " + self.POT_INFO['pot_name'])
