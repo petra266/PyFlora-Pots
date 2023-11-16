@@ -2,6 +2,8 @@ import tkinter as tk
 import sqlite3
 from tkinter import messagebox
 import random
+import requests
+from bs4 import BeautifulSoup
 
 
 class PyFloraPot:
@@ -47,7 +49,24 @@ class PyFloraPot:
         except sqlite3.Error as e:
             messagebox.showerror(title='Error in retrieving data',
                                  message='Data retrieving unsucessful. Error: ' + str(e))
-            
+
+    def webscrape_temperature(self, url):
+        ''' Returns the value of temperature from the provided url '''
+        r = requests.get(url)
+        data = r.text
+        soup = BeautifulSoup(data, 'html.parser')
+        try:
+            container = soup.find('div', class_='location-info block-01')
+            temperature = container.find('li', class_='temp').find(
+                'span', class_='val').text
+            temperature = int(temperature[:-1])
+            print('Temperature successfully webscraped.')
+            return True, temperature
+        except AttributeError as e:
+            print(
+                f'Unable to webscrape temperature due to error: {e}. Temperature will be randomly generated.')
+            return False, temperature
+
     def generate_measurements(self):
         ''' Generate a value for each pot attribute measured '''
 
@@ -76,10 +95,15 @@ class PyFloraPot:
             measured_light = round(random.uniform(0, 400), 2)
 
         # temperature in range -20 - 50, with 80% chance 10-25
-        if random.random() < 0.8:
-            measured_temperature = round(random.uniform(10, 25), 2)
+        temperature_web, retrieved_temperature = self.webscrape_temperature(PyFloraPot, 'https://www.vrijeme.net/hrvatska/zagreb')
+
+        if temperature_web:
+            measured_temperature = retrieved_temperature
         else:
-            measured_temperature = round(random.uniform(-20, 50), 2)
+            if random.random() < 0.8:
+                measured_temperature = round(random.uniform(10, 25), 2)
+            else:
+                measured_temperature = round(random.uniform(-20, 50), 2)
 
         # return measured values
         all_measures = {
@@ -101,8 +125,6 @@ class PyFloraPot:
                 new_measurement_no = pot.no_measurements+1
                 # get number of measurement for the selected pot 
                 # compare it to the highest measurement to see whether new column is necessary
-                print('New m no: ', new_measurement_no)
-                print('Max m no: ', PyFloraPot.max_no_measurements)
                 if new_measurement_no > PyFloraPot.max_no_measurements:
                     QUERIES_ADD_COLUMNS = [
                         f'humidity{new_measurement_no} FLOAT',
