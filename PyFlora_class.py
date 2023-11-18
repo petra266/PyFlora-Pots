@@ -88,9 +88,9 @@ class PyFloraPot:
         else:
             measured_salinity = round(random.uniform(6, 6), 2)
        
-        # light in range 0 - 400, with 80% chance 150 - 250
+        # light in range  - 400, with 80% chance 150 - 250
         if random.random() < 0.8:
-            measured_light = round(random.uniform(0, 14), 2)
+            measured_light = round(random.uniform(150, 250), 2)
         else:
             measured_light = round(random.uniform(0, 400), 2)
 
@@ -115,64 +115,67 @@ class PyFloraPot:
             }
         return all_measures
 
+    def create_new_measurement_columns(self, database_name, new_measurement_no):
+        ''' Creates a new column in Database_PyFlora_Pots if no column for that number of measurement '''
+
+        QUERIES_ADD_COLUMNS = [
+            f'humidity{new_measurement_no} FLOAT',
+            f'ph{new_measurement_no} FLOAT',
+            f'salinity{new_measurement_no} FLOAT',
+            f'light{new_measurement_no} FLOAT',
+            f'temperature{new_measurement_no} FLOAT'
+        ]
+            #add new columns to the database
+        try:
+            with sqlite3.connect(database_name) as sql_connection:
+                cursor = sql_connection.cursor()
+                for column in QUERIES_ADD_COLUMNS:
+                    cursor.execute(f'ALTER TABLE Database_PyFlora_Pots ADD {column}')
+                sql_connection.commit()
+                print("Successfully created new columns in the database.")
+                
+                PyFloraPot.max_no_measurements += 1
+
+        except sqlite3.Error as e:
+            print('Creating new columns in the database unsuccessful. Error: ', e)
+            return e
+            
     def save_measurements(self, pots_to_sync):
-        # create a new column in Database_PyFlora_Pots if no column for that number of measurement
-        
+
         DB_NAME = 'Database_PyFlora_Pots.db'
 
         for pot in PyFloraPot.list_pots:
             if pot.pot_name in pots_to_sync:
-                new_measurement_no = pot.no_measurements+1
                 # get number of measurement for the selected pot 
                 # compare it to the highest measurement to see whether new column is necessary
+                new_measurement_no = pot.no_measurements+1
                 if new_measurement_no > PyFloraPot.max_no_measurements:
-                    QUERIES_ADD_COLUMNS = [
-                        f'humidity{new_measurement_no} FLOAT',
-                        f'ph{new_measurement_no} FLOAT',
-                        f'salinity{new_measurement_no} FLOAT',
-                        f'light{new_measurement_no} FLOAT',
-                        f'temperature{new_measurement_no} FLOAT'
-                    ]
-                        #add new columns to the database
-                    try:
-                        with sqlite3.connect(DB_NAME) as sql_connection:
-                            cursor = sql_connection.cursor()
-                            for column in QUERIES_ADD_COLUMNS:
-                                cursor.execute(f'ALTER TABLE Database_PyFlora_Pots ADD {column}')
-                            sql_connection.commit()
-                            print("Successfully created new columns in the database.")
-                            
-                            PyFloraPot.max_no_measurements += 1
+                            self.create_new_measurement_columns(PyFloraPot, DB_NAME, new_measurement_no)
+            
+            # generate new measurements
+            all_measurements = self.generate_measurements(PyFloraPot)
 
-                    except sqlite3.Error as e:
-                        print('Creating new columns in the database unsuccessful. Error: ', e)
-                        return e
-                        
-                # generate measurements 
-                all_measurements = self.generate_measurements(PyFloraPot)
-                
-                # update database with new measurements
+            # update database with new measurements
+            QUERIES_UPDATE_MEASUREMENTS = [
+                f"humidity{new_measurement_no} = {all_measurements.get('measured_humidity')}",
+                f"ph{new_measurement_no} = {all_measurements.get('measured_ph')}",
+                f"salinity{new_measurement_no} = {all_measurements.get('measured_salinity')}",
+                f"light{new_measurement_no} = {all_measurements.get('measured_light')}",
+                f"temperature{new_measurement_no} = {all_measurements.get('measured_temperature')}",
+                f"no_measurements = {new_measurement_no}"
+            ]
 
-                QUERIES_UPDATE_MEASUREMENTS = [
-                    f"humidity{new_measurement_no} = {all_measurements.get('measured_humidity')}",
-                    f"ph{new_measurement_no} = {all_measurements.get('measured_ph')}",
-                    f"salinity{new_measurement_no} = {all_measurements.get('measured_salinity')}",
-                    f"light{new_measurement_no} = {all_measurements.get('measured_light')}",
-                    f"temperature{new_measurement_no} = {all_measurements.get('measured_temperature')}",
-                    f"no_measurements = {new_measurement_no}"
-                ]
+            try:
+                with sqlite3.connect(DB_NAME) as sql_connection:
+                    cursor = sql_connection.cursor()
+                    for column in QUERIES_UPDATE_MEASUREMENTS:
+                        cursor.execute(f'UPDATE Database_PyFlora_Pots SET {column} WHERE pot_name = "{pot.pot_name}"')
+                    sql_connection.commit()
+                    print("Successfully inserted the new measurements into the database.")
 
-                try:
-                    with sqlite3.connect(DB_NAME) as sql_connection:
-                        cursor = sql_connection.cursor()
-                        for column in QUERIES_UPDATE_MEASUREMENTS:
-                            cursor.execute(f'UPDATE Database_PyFlora_Pots SET {column} WHERE pot_name = "{pot.pot_name}"')
-                        sql_connection.commit()
-                        print("Successfully inserted the new measurements into the database.")
-
-                except sqlite3.Error as e:
-                    print('Inserting new measurements into the database unsucessful. Error: ', e)
-                    
+            except sqlite3.Error as e:
+                print('Inserting new measurements into the database unsucessful. Error: ', e)
+                                        
     def sync(self, pots_to_sync):
         self.update_pot_list(PyFloraPot)
         self.save_measurements(PyFloraPot, pots_to_sync)
