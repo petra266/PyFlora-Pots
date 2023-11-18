@@ -84,9 +84,9 @@ class PyFloraPot:
     
         # salinity in range 0 - 6, with 80% chance 0 - 2
         if random.random() < 0.8:
-            measured_salinitiy = round(random.uniform(0, 2), 2)
+            measured_salinity = round(random.uniform(0, 2), 2)
         else:
-            measured_salinitiy = round(random.uniform(6, 6), 2)
+            measured_salinity = round(random.uniform(6, 6), 2)
        
         # light in range 0 - 400, with 80% chance 150 - 250
         if random.random() < 0.8:
@@ -109,7 +109,7 @@ class PyFloraPot:
         all_measures = {
             'measured_humidity': measured_humidity,
             'measured_ph': measured_ph,
-            'measured_salinitiy': measured_salinitiy,
+            'measured_salinity': measured_salinity,
             'measured_light': measured_light,
             'measured_temperature': measured_temperature
             }
@@ -156,7 +156,7 @@ class PyFloraPot:
                 QUERIES_UPDATE_MEASUREMENTS = [
                     f"humidity{new_measurement_no} = {all_measurements.get('measured_humidity')}",
                     f"ph{new_measurement_no} = {all_measurements.get('measured_ph')}",
-                    f"salinity{new_measurement_no} = {all_measurements.get('measured_salinitiy')}",
+                    f"salinity{new_measurement_no} = {all_measurements.get('measured_salinity')}",
                     f"light{new_measurement_no} = {all_measurements.get('measured_light')}",
                     f"temperature{new_measurement_no} = {all_measurements.get('measured_temperature')}",
                     f"no_measurements = {new_measurement_no}"

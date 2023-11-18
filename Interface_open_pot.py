@@ -17,7 +17,6 @@ class InterfaceOpenPot:
         #retrieve pot information and save it into a class property
         self.POT_INFO = self.retrieve_pot_info()
     
-        self.create_textvariables()
         self.interface_elements()
 
     def retrieve_pot_info(self):
@@ -81,32 +80,36 @@ class InterfaceOpenPot:
                                  parent=self.toplevel_open_pot)
         self.toplevel_open_pot.destroy()       
 
-    def update_current_values_shown(self):
-        self.current_humidity.set(f"Current humidity:   {self.POT_INFO['current_humidity']}")
-        self.current_ph.set(f"Current PH:   {self.POT_INFO['current_ph']}")
-        self.current_salinity.set(f"Current salinity:   {self.POT_INFO['current_salinity']}")
-        self.current_light.set(f"Current light exposure:   {self.POT_INFO['current_light']}")
-        self.current_temperature.set(f"Current temperature:   {self.POT_INFO['current_temperature']}")
+    def update_current_measures_labels(self):
+        self.current_humidity_label.config(text=f"Current humidity:   {self.POT_INFO['current_humidity']}")
+        self.current_ph_label.config(text=f"Current PH:   {self.POT_INFO['current_ph']}")
+        self.current_salinity_label.config(text=f"Current salinity:   {self.POT_INFO['current_salinity']}")
+        self.current_light_label.config(text=f"Current light exposure:   {self.POT_INFO['current_light']}")
+        self.current_temperature_label.config(text=f"Current temperature:   {self.POT_INFO['current_temperature']}")
     
-    def check_needed_actions(self):
-        ''' Checks the latest measure for each pot attribute. If deviation from optimal value is acceptable, 
+    def update_needed_actions(self):
+        ''' Checks the latest measures for each pot attribute. If the deviation from optimal value is acceptable, 
             action label is set to checkmark, otherwise a cross'''
         
         # check humidity - accepted deviation +/- 15% 
-        self.humidity_check = '\u2717' if abs(self.POT_INFO['optimal_humidity'] - self.POT_INFO['current_humidity']) > 15 else '\u2713'
-        #humidity_action_label.config(text=f"Current humidity:   {self.POT_INFO['current_humidity']} {humidity_check}")
+        humidity_check = '\u2713' if abs(self.POT_INFO['optimal_humidity'] - self.POT_INFO['current_humidity']) < 15 else '\u2717'
+        self.humidity_action_label.config(text=humidity_check)
 
         # ph - accepted deviation +/- 1,5
-        self.ph_check = '\u2717' if abs(self.POT_INFO['optimal_ph'] - self.POT_INFO['current_ph']) > 1.5 else '\u2717'
+        ph_check = '\u2713' if abs(self.POT_INFO['optimal_ph'] - self.POT_INFO['current_ph']) < 1.75 else '\u2717'
+        self.ph_action_label.config(text=ph_check)
 
         # salinity - has to be below limit
-        self.salinitiy_check = '\u2717' if self.POT_INFO['max_salinity'] > self.POT_INFO['current_salinity'] else '\u2717'
+        salinitiy_check = '\u2713' if self.POT_INFO['max_salinity'] > self.POT_INFO['current_salinity'] else '\u2717'
+        self.salinity_action_label.config(text=salinitiy_check)
         
         # light - accepted deviation +/- 100 PAR
-        self.light_check = '\u2717' if abs(self.POT_INFO['optimal_light'] - self.POT_INFO['current_light']) > 100 else '\u2713'
+        light_check = '\u2713' if abs(self.POT_INFO['optimal_light'] - self.POT_INFO['current_light']) < 150 else '\u2717'
+        self.light_action_label.config(text=light_check)
 
         # temperature - accepted deviation +/- 8 degrees
-        self.temperature_check = '\u2717' if abs(self.POT_INFO['optimal_temperature'] - self.POT_INFO['current_temperature']) > 8 else '\u2713'
+        temperature_check = '\u2713' if abs(self.POT_INFO['optimal_temperature'] - self.POT_INFO['current_temperature']) < 8 else '\u2717'
+        self.temperature_action_label.config(text=temperature_check)
 
     def sync(self):
         syncing_error = PyFloraPot.sync(PyFloraPot, self.POT_INFO['pot_name']) # returns an error message if syncing unsucessful
@@ -114,26 +117,9 @@ class InterfaceOpenPot:
             messagebox.showerror(title='Error while attempting to sync!',
                     message='PyFlora Pot syncing unsuccessful: ' + str(syncing_error) + "\n\nPlease try again or restart the application.",
                     parent=self.toplevel_open_pot)
-        self.retrieve_pot_info()
-        self.update_current_values_shown()
-        self.check_needed_actions()
-
-    def create_textvariables(self):
-       # create text variables to show pot status and actions needed
-        self.current_humidity = tk.StringVar()
-        self.humidity_action = tk.StringVar()
-        
-        self.current_ph = tk.StringVar()
-        self.ph_action = tk.StringVar()
-        
-        self.current_salinity = tk.StringVar()
-        self.salinity_action = tk.StringVar()
-
-        self.current_light = tk.StringVar()
-        self.light_action = tk.StringVar()
-
-        self.current_temperature = tk.StringVar()
-        self.temperature_action = tk.StringVar()
+        self.POT_INFO = self.retrieve_pot_info()
+        self.update_current_measures_labels()
+        self.update_needed_actions()
 
     def interface_elements(self):
 
@@ -145,54 +131,54 @@ class InterfaceOpenPot:
         plant_name_label.grid(row=2, column=1)
 
         # humidity
-        self.current_humidity_label = tk.Label(self.toplevel_open_pot, textvariable=self.current_humidity)
-        self.current_humidity_label.grid(row=10, column=1)
-
         optimal_humidity_label = tk.Label(self.toplevel_open_pot, text=f"Optimal humidity:   {self.POT_INFO['optimal_humidity']}")
-        optimal_humidity_label.grid(row=10, column=2)
+        optimal_humidity_label.grid(row=10, column=1)
 
-        humidity_action_label = tk.Label(self.toplevel_open_pot, textvariable=self.humidity_action)
-        humidity_action_label.grid(row=10, column=3)
+        self.current_humidity_label = tk.Label(self.toplevel_open_pot, text=f"Current humidity:   {self.POT_INFO['current_humidity']}")
+        self.current_humidity_label.grid(row=10, column=2)
+
+        self.humidity_action_label = tk.Label(self.toplevel_open_pot, text='-')
+        self.humidity_action_label.grid(row=10, column=3)
 
         # PH
-        self.current_ph_label = tk.Label(self.toplevel_open_pot, textvariable=self.current_humidity)
-        self.current_ph_label.grid(row=11, column=1)
-
         optimal_ph_label = tk.Label(self.toplevel_open_pot, text=f"Optimal PH:   {self.POT_INFO['optimal_ph']}")
-        optimal_ph_label.grid(row=11, column=2)
+        optimal_ph_label.grid(row=11, column=1)
+        
+        self.current_ph_label = tk.Label(self.toplevel_open_pot, text=f"Current PH:   {self.POT_INFO['current_ph']}")
+        self.current_ph_label.grid(row=11, column=2)
 
-        ph_action_label = tk.Label(self.toplevel_open_pot, textvariable=self.ph_action)
-        ph_action_label.grid(row=11, column=3)
+        self.ph_action_label = tk.Label(self.toplevel_open_pot, text='-')
+        self.ph_action_label.grid(row=11, column=3)
 
         # salinity
-        self.current_salinity_label = tk.Label(self.toplevel_open_pot, textvariable=self.current_salinity)
-        self.current_salinity_label.grid(row=12, column=1)
-
         optimal_salinity_label = tk.Label(self.toplevel_open_pot, text=f"Salinity celiing:   {self.POT_INFO['max_salinity']}")
-        optimal_salinity_label.grid(row=12, column=2)
+        optimal_salinity_label.grid(row=12, column=1)
+        
+        self.current_salinity_label = tk.Label(self.toplevel_open_pot, text=f"Current salinity:   {self.POT_INFO['current_salinity']}")
+        self.current_salinity_label.grid(row=12, column=2)
 
-        salinity_action_label = tk.Label(self.toplevel_open_pot, textvariable=self.salinity_action)
-        salinity_action_label.grid(row=12, column=3)
+        self.salinity_action_label = tk.Label(self.toplevel_open_pot, text='-')
+        self.salinity_action_label.grid(row=12, column=3)
 
         # light
-        self.current_light_label = tk.Label(self.toplevel_open_pot, textvariable=self.current_light)
-        self.current_light_label.grid(row=13, column=1)
-
         optimal_light_label = tk.Label(self.toplevel_open_pot, text=f"Optimal light:   {self.POT_INFO['optimal_light']}")
-        optimal_light_label.grid(row=13, column=2)
+        optimal_light_label.grid(row=13, column=1)
+        
+        self.current_light_label = tk.Label(self.toplevel_open_pot, text=f"Current light exposure:   {self.POT_INFO['current_light']}")
+        self.current_light_label.grid(row=13, column=2)
 
-        light_action_label = tk.Label(self.toplevel_open_pot, textvariable=self.light_action)
-        light_action_label.grid(row=13, column=3)
+        self.light_action_label = tk.Label(self.toplevel_open_pot, text='-')
+        self.light_action_label.grid(row=13, column=3)
 
         # temperature
-        self.current_temperature_label = tk.Label(self.toplevel_open_pot, textvariable=self.current_temperature)
-        self.current_temperature_label.grid(row=14, column=1)
-
         optimal_temperature_label = tk.Label(self.toplevel_open_pot, text=f"Optimal temperature:   {self.POT_INFO['optimal_temperature']}")
-        optimal_temperature_label.grid(row=14, column=2)
+        optimal_temperature_label.grid(row=14, column=1)
 
-        temperature_action_label = tk.Label(self.toplevel_open_pot, textvariable=self.temperature_action)
-        temperature_action_label.grid(row=14, column=3)
+        self.current_temperature_label = tk.Label(self.toplevel_open_pot, text=f"Current temperature:   {self.POT_INFO['current_temperature']}")
+        self.current_temperature_label.grid(row=14, column=2)
+
+        self.temperature_action_label = tk.Label(self.toplevel_open_pot, text='-')
+        self.temperature_action_label.grid(row=14, column=3)
 
         # other
         sync_button = tk.Button(self.toplevel_open_pot, text="Sync only this pot", command=self.sync)
