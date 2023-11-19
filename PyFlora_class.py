@@ -4,6 +4,7 @@ from tkinter import messagebox
 import random
 import requests
 from bs4 import BeautifulSoup
+import datetime
 
 
 class PyFloraPot:
@@ -82,6 +83,8 @@ class PyFloraPot:
 
     def generate_measurements(self):
         ''' Generate a value for each pot attribute measured '''
+        # timestamp of measurement
+        measured_datetime = datetime.datetime.now()
 
         # humidity in range 10 - 90, with 80% chance 50-70
         if random.random() < 0.8:
@@ -119,7 +122,7 @@ class PyFloraPot:
                 measured_temperature = round(random.uniform(-20, 50), 2)
 
         # return measured values
-        all_measures = {
+        all_measures = {'measured_datetime' : measured_datetime,
             'measured_humidity': measured_humidity,
             'measured_ph': measured_ph,
             'measured_salinity': measured_salinity,
@@ -132,8 +135,13 @@ class PyFloraPot:
         # generate new measurements
         all_measurements = self.generate_measurements(PyFloraPot)
 
+        #format datetime
+        formatted_datetime= all_measurements.get('measured_datetime').strftime('%Y-%m-%d %H:%M:%S')
+        print('FORMATTED DATETIME', formatted_datetime)
+
         # update database with new measurements
         QUERIES_UPDATE_MEASUREMENTS = [
+            f"datetime{new_measurement_no} = '{formatted_datetime}'",
             f"humidity{new_measurement_no} = {all_measurements.get('measured_humidity')}",
             f"ph{new_measurement_no} = {all_measurements.get('measured_ph')}",
             f"salinity{new_measurement_no} = {all_measurements.get('measured_salinity')}",
@@ -144,10 +152,14 @@ class PyFloraPot:
         return QUERIES_UPDATE_MEASUREMENTS
 
     def query_optimized_measurements(self, new_measurement_no, pots_to_sync):
+        measured_datetime = datetime.datetime.now()
+        formatted_datetime = measured_datetime.strftime('%Y-%m-%d %H:%M:%S')
+        
         for pot in PyFloraPot.list_pots:
             if pot.pot_name in pots_to_sync:
             # update database with new measurements
                 QUERIES_OPTIMIZE_MEASUREMENTS = [
+                f"datetime{new_measurement_no} = '{formatted_datetime}'",
                 f"humidity{new_measurement_no} = {pot.optimal_humidity}",
                 f"ph{new_measurement_no} = {pot.optimal_ph}",
                 f"salinity{new_measurement_no} = 0",
@@ -161,6 +173,7 @@ class PyFloraPot:
         ''' Creates a new column in Database_PyFlora_Pots if no column for that number of measurement '''
 
         QUERIES_ADD_COLUMNS = [
+            f'datetime{new_measurement_no} VARCHAR(100)',
             f'humidity{new_measurement_no} FLOAT',
             f'ph{new_measurement_no} FLOAT',
             f'salinity{new_measurement_no} FLOAT',

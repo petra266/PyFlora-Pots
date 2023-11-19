@@ -92,23 +92,23 @@ class InterfaceOpenPot:
             action label is set to checkmark, otherwise a cross'''
         
         # check humidity - accepted deviation +/- 15% 
-        humidity_check = '\u2713' if abs(self.POT_INFO['optimal_humidity'] - self.POT_INFO['current_humidity']) < 15 else '\u2717'
+        humidity_check = '\u2713' if abs(self.POT_INFO['optimal_humidity'] - self.POT_INFO['current_humidity']) < 15 else '\u2717 Water!'
         self.humidity_action_label.config(text=humidity_check)
 
         # ph - accepted deviation +/- 1,5
-        ph_check = '\u2713' if abs(self.POT_INFO['optimal_ph'] - self.POT_INFO['current_ph']) < 1.75 else '\u2717'
+        ph_check = '\u2713' if abs(self.POT_INFO['optimal_ph'] - self.POT_INFO['current_ph']) < 1.75 else '\u2717 Add fertilizer!'
         self.ph_action_label.config(text=ph_check)
 
         # salinity - has to be below limit
-        salinitiy_check = '\u2713' if self.POT_INFO['max_salinity'] > self.POT_INFO['current_salinity'] else '\u2717'
+        salinitiy_check = '\u2713' if self.POT_INFO['max_salinity'] > self.POT_INFO['current_salinity'] else '\u2717 Change soil!'
         self.salinity_action_label.config(text=salinitiy_check)
         
         # light - accepted deviation +/- 100 PAR
-        light_check = '\u2713' if abs(self.POT_INFO['optimal_light'] - self.POT_INFO['current_light']) < 150 else '\u2717'
+        light_check = '\u2713' if abs(self.POT_INFO['optimal_light'] - self.POT_INFO['current_light']) < 150 else '\u2717 Adjust light!'
         self.light_action_label.config(text=light_check)
 
         # temperature - accepted deviation +/- 8 degrees
-        temperature_check = '\u2713' if abs(self.POT_INFO['optimal_temperature'] - self.POT_INFO['current_temperature']) < 8 else '\u2717'
+        temperature_check = '\u2713' if abs(self.POT_INFO['optimal_temperature'] - self.POT_INFO['current_temperature']) < 8 else '\u2717 Adjust temperature!'
         self.temperature_action_label.config(text=temperature_check)
 
     def sync(self):
