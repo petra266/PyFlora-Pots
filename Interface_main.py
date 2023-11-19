@@ -85,7 +85,7 @@ class InterfaceMain:
 
     def sync(self):
         pots_to_sync = PyFloraPot.all_pot_names
-        syncing_error = PyFloraPot.sync(PyFloraPot, pots_to_sync) # returns an error message if syncing unsucessful
+        syncing_error = PyFloraPot.sync(PyFloraPot, pots_to_sync, generated=True) # returns an error message if syncing unsucessful
         if syncing_error:
             messagebox.showerror(title='Error while attempting to sync!',
                     message='PyFlora Pot syncing unsuccessful: ' + str(syncing_error) + "\n\nPlease try again or restart the application.",

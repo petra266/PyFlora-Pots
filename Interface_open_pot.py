@@ -12,7 +12,7 @@ class InterfaceOpenPot:
     def __init__(self, root):
         self.toplevel_open_pot = tk.Toplevel(root)
         self.toplevel_open_pot.title("PyFlora Pots - " + PyFloraPot.SELECTED_POT)
-        self.toplevel_open_pot.geometry('1200x800')
+        self.toplevel_open_pot.geometry('800x400')
 
         #retrieve pot information and save it into a class property
         self.POT_INFO = self.retrieve_pot_info()
@@ -112,10 +112,22 @@ class InterfaceOpenPot:
         self.temperature_action_label.config(text=temperature_check)
 
     def sync(self):
-        syncing_error = PyFloraPot.sync(PyFloraPot, self.POT_INFO['pot_name']) # returns an error message if syncing unsucessful
+        syncing_error = PyFloraPot.sync(PyFloraPot, self.POT_INFO['pot_name'], generated=True) # returns an error message if syncing unsucessful
         if syncing_error:
             messagebox.showerror(title='Error while attempting to sync!',
-                    message='PyFlora Pot syncing unsuccessful: ' + str(syncing_error) + "\n\nPlease try again or restart the application.",
+                    message='PyFlora Pot syncing unsuccessful: ' + str(syncing_error)\
+                          + "\n\nPlease try again or restart the application.",
+                    parent=self.toplevel_open_pot)
+        self.POT_INFO = self.retrieve_pot_info()
+        self.update_current_measures_labels()
+        self.update_needed_actions()
+
+    def complete_actions(self):
+        optimizing_error = PyFloraPot.sync(PyFloraPot, self.POT_INFO['pot_name'], generated=False) # returns an error message if syncing unsucessful
+        if optimizing_error:
+            messagebox.showerror(title='Error while attempting to optimize pot values!',
+                    message='Unsuccessful optimization of the pot: ' + str(optimizing_error)\
+                          + "\n\nPlease try again or restart the application.",
                     parent=self.toplevel_open_pot)
         self.POT_INFO = self.retrieve_pot_info()
         self.update_current_measures_labels()
@@ -183,6 +195,9 @@ class InterfaceOpenPot:
         # other
         sync_button = tk.Button(self.toplevel_open_pot, text="Sync only this pot", command=self.sync)
         sync_button.grid(row=999, column=1)
+
+        complete_actions_button = tk.Button(self.toplevel_open_pot, text="Complete recommended actions", command=self.complete_actions)
+        complete_actions_button.grid(row=999, column=2)
 
         delete_button = tk.Button(self.toplevel_open_pot, text="Remove pot...", command=self.delete_pot)
         delete_button.grid(row=1000, column=2)
