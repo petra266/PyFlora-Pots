@@ -79,7 +79,9 @@ class InterfaceMain:
         self.create_buttons()
 
     def launch_InterfaceManageLexicon(self):
-        InterfaceManageLexicon(self.root)
+        interface_manage_lexicon = InterfaceManageLexicon(self.root)
+        self.root.wait_window(interface_manage_lexicon.toplevel_manage_lexicon)
+        self.create_buttons()
 
     def sync(self):
         pots_to_sync = PyFloraPot.all_pot_names
