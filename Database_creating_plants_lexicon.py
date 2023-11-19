@@ -27,6 +27,23 @@ optimal_ph, max_salinity, optimal_light, optimal_temperature)
 VALUES (?, ?, ?, ?, ?, ?)
 '''
 
+'''INSERT_DICT = [
+    {'plant_name': 'Basil (Ocimum basilicum)',
+     'optimal_humidity': 60,
+     'optimal_ph': 6,
+     'max_salinity': 2,
+     'optimal_light': 350,
+     'optimal_temperature': 24
+     },
+    {'plant_name': 'Hibiscus (Hibiscus rosa-sinensis)',
+     'optimal_humidity': 65,
+     'optimal_ph': 6,
+     'max_salinity': 2,
+     'optimal_light': 350,
+     'optimal_temperature': 24
+     },
+]'''
+
 INSERT_DICT = [
     {'plant_name': 'Basil (Ocimum basilicum)',
      'optimal_humidity': 60,
@@ -42,7 +59,64 @@ INSERT_DICT = [
      'optimal_light': 350,
      'optimal_temperature': 24
      },
+    {'plant_name': 'Spider Plant (Chlorophytum comosum)',
+     'optimal_humidity': 40,
+     'optimal_ph': 6,
+     'max_salinity': 1.5,
+     'optimal_light': 200,
+     'optimal_temperature': 18
+     },
+    {'plant_name': 'Snake Plant (Sansevieria trifasciata)',
+     'optimal_humidity': 40,
+     'optimal_ph': 6.5,
+     'max_salinity': 2,
+     'optimal_light': 150,
+     'optimal_temperature': 18
+     },
+    {'plant_name': 'Peace Lily (Spathiphyllum spp.)',
+     'optimal_humidity': 40,
+     'optimal_ph': 6.5,
+     'max_salinity': 1.5,
+     'optimal_light': 150,
+     'optimal_temperature': 22
+     },
+    {'plant_name': 'Aloe Vera (Aloe barbadensis miller)',
+     'optimal_humidity': 30,
+     'optimal_ph': 6,
+     'max_salinity': 1.5,
+     'optimal_light': 200,
+     'optimal_temperature': 22
+     },
+    {'plant_name': 'ZZ Plant (Zamioculcas zamiifolia)',
+     'optimal_humidity': 40,
+     'optimal_ph': 6,
+     'max_salinity': 1.5,
+     'optimal_light': 150,
+     'optimal_temperature': 18
+     },
+    {'plant_name': 'Fiddle Leaf Fig (Ficus lyrata)',
+     'optimal_humidity': 50,
+     'optimal_ph': 6,
+     'max_salinity': 2,
+     'optimal_light': 300,
+     'optimal_temperature': 24
+     },
+    {'plant_name': 'Jade Plant (Crassula ovata)',
+     'optimal_humidity': 40,
+     'optimal_ph': 6.5,
+     'max_salinity': 1.5,
+     'optimal_light': 200,
+     'optimal_temperature': 20
+     },
+    {'plant_name': 'Boston Fern (Nephrolepis exaltata)',
+     'optimal_humidity': 60,
+     'optimal_ph': 5.5,
+     'max_salinity': 1.5,
+     'optimal_light': 200,
+     'optimal_temperature': 18
+     }
 ]
+
 
 INSERT_LIST = []
 for i in INSERT_DICT:
