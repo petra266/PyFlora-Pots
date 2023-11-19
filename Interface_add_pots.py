@@ -38,7 +38,8 @@ class InterfaceAddPots:
         except sqlite3.Error as e:
             print('Data retrieving unsucessful. Error: ', e)
             messagebox.showerror(title='Error in retrieving data!',
-                                 message='Data retrieving unsucessful. Error: ' + str(e) + "\nPlease restart the application.",
+                                 message='Data retrieving unsucessful. Error: ' +
+                                 str(e) + "\nPlease restart the application.",
                                  parent=self.toplevel_add_pots)
             self.toplevel_add_pots.destroy()
 
@@ -51,12 +52,12 @@ class InterfaceAddPots:
             if self.new_pot.get() == PyFloraPot.list_pots[i].pot_name:
                 validation = False
                 messagebox.showwarning(title='PyFlora pot already in use!',
-                                       message='Please choose another name for the PyFlora pot.', 
+                                       message='Please choose another name for the PyFlora pot.',
                                        parent=self.toplevel_add_pots)
             if self.new_pot.get() == "":
                 validation = False
                 messagebox.showwarning(title='No name given!',
-                                       message='Please choose a name for the PyFlora pot.', 
+                                       message='Please choose a name for the PyFlora pot.',
                                        parent=self.toplevel_add_pots)
         # check a plant is chosen from the menu
         if self.chosen_plant.get() == self.DEFAULT_PLANT:
@@ -65,18 +66,18 @@ class InterfaceAddPots:
                                    message='Please choose a plant from the plant menu.\n\nNote: If the plant you have in mind is not on the list, add it to the plant lexicon.',
                                    parent=self.toplevel_add_pots)
         # return validation result
-        if validation == False: 
+        if validation == False:
             return False
         else:
             return True
 
     def add_new_pot(self):
-        """Button fuction - adds a new PyFlora pot to Database_PlyFlora_Pots."""
-        
+        """Button function - adds a new PyFlora pot to Database_PlyFlora_Pots."""
+
         # activate validation function
         validation = self.validate_choices()
 
-        # retrieve data on the selected plant from the lexicon 
+        # retrieve data on the selected plant from the lexicon
         if validation:
             DB_NAME = 'Database_plants_lexicon.db'
             QUERY_GET_CHOSEN_PLANT = 'SELECT * FROM Database_plants_lexicon where plant_name ='
@@ -85,14 +86,17 @@ class InterfaceAddPots:
                 with sqlite3.connect(DB_NAME) as sql_connection:
                     cursor = sql_connection.cursor()
 
-                    cursor.execute(QUERY_GET_CHOSEN_PLANT + '"{}"'.format(self.chosen_plant.get()))
+                    cursor.execute(QUERY_GET_CHOSEN_PLANT +
+                                   '"{}"'.format(self.chosen_plant.get()))
                     data = cursor.fetchall()
 
             except sqlite3.Error as e:
                 print('Data retrieving unsucessful. Error: ', e)
                 messagebox.showerror(title='Error in retrieving data!',
-                                    message='Data retrieving unsucessful. Error: ' + str(e) + "\n\nPlease restart the application.",
-                                    parent=self.toplevel_add_pots)
+                                     message='Data retrieving unsucessful. Error: ' +
+                                     str(e) +
+                                     "\n\nPlease restart the application.",
+                                     parent=self.toplevel_add_pots)
                 self.toplevel_add_pots.destroy()
 
             # insert the new pot into Database_PyFlora_Pots
@@ -106,7 +110,8 @@ class InterfaceAddPots:
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             '''
 
-            new_pot = (self.new_pot.get(), data[0][1], data[0][2], data[0][3], data[0][4], data[0][5], data[0][6], 0)
+            new_pot = (self.new_pot.get(
+            ), data[0][1], data[0][2], data[0][3], data[0][4], data[0][5], data[0][6], 0)
 
             try:
                 with sqlite3.connect(DB_NAME) as sql_connection:
@@ -119,8 +124,9 @@ class InterfaceAddPots:
             except sqlite3.Error as e:
                 print('Inserting new pot unsuccessful. Error: ', e)
                 messagebox.showerror(title='Error while adding a new PyFlora Pot!',
-                                    message='New PyFlora Pot not added due to error: ' + str(e) + "\n\nPlease try again or restart the application.",
-                                    parent=self.toplevel_add_pots)
+                                     message='New PyFlora Pot not added due to error: ' +
+                                     str(e) + "\n\nPlease try again or restart the application.",
+                                     parent=self.toplevel_add_pots)
             self.toplevel_add_pots.destroy()
 
     def interface_elements(self):

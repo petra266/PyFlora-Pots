@@ -4,12 +4,13 @@ from PyFlora_class import PyFloraPot
 from Interface_add_pots import *
 from Interface_open_pot import *
 from Interface_user_account import *
+from Interface_manage_lexicon import *
 
 class InterfaceMain:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("PyFlora Pots")
-        self.root.geometry('1200x800')
+        self.root.geometry('800x400')
 
         self.create_buttons()
 
@@ -22,9 +23,13 @@ class InterfaceMain:
 
         # Header and options - top_space to be used for button.grid calculations
         HEADER = 5
-        account_button = tk.Button(self.root, text="User account",
+        account_button = tk.Button(self.root, text="User Account",
                             command=self.launch_InterfaceUserAccount)
         account_button.grid(row=0, column=2)
+
+        lexicon_button = tk.Button(self.root, text='Manage Lexicon',
+                            command=self.launch_InterfaceManageLexicon)
+        lexicon_button.grid(row=0, column=1)
 
         # Defining and arranging buttons for each PyFlora pot
         PyFloraPot_list = PyFloraPot.update_pot_list(self)
@@ -72,6 +77,9 @@ class InterfaceMain:
         interface_open_pot = InterfaceOpenPot(self.root)
         self.root.wait_window(interface_open_pot.toplevel_open_pot)
         self.create_buttons()
+
+    def launch_InterfaceManageLexicon(self):
+        InterfaceManageLexicon(self.root)
 
     def sync(self):
         pots_to_sync = PyFloraPot.all_pot_names
