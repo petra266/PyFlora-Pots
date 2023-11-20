@@ -1,5 +1,6 @@
 """Creating the PyFlora Pots database"""
 
+import os
 import sqlite3
 
 DB_NAME = 'Database_PyFlora_Pots.db'
@@ -18,6 +19,7 @@ CREATE TABLE IF NOT EXISTS Database_PyFlora_Pots (
     max_salinity INTEGER NOT NULL CHECK (max_salinity >= 0),
     optimal_light INTEGER NOT NULL CHECK (optimal_light >= 0),
     optimal_temperature INTEGER NOT NULL,
+    photo BLOB UNIQUE,
     no_measurements INTEGER NOT NULL
     );
 '''

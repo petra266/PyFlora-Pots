@@ -15,7 +15,7 @@ class PyFloraPot:
     def __init__(
             self, pot_name, plant_name, no_measurements, 
             optimal_humidity, optimal_ph, max_salinity, 
-            optimal_light, optimal_temperature
+            optimal_light, optimal_temperature, photo
             ):
         self.pot_name = pot_name
         self.plant_name = plant_name
@@ -26,6 +26,8 @@ class PyFloraPot:
         self.max_salinity = max_salinity
         self.optimal_light = optimal_light
         self.optimal_temperature = optimal_temperature
+
+        self.photo = photo
         
         PyFloraPot.count_pots += 1
         
@@ -37,7 +39,7 @@ class PyFloraPot:
         PyFloraPot.max_no_measurements = 0
 
         DB_NAME = 'Database_PyFlora_Pots.db'
-        QUERY_GET_ALL_POTS = 'SELECT pot_name, plant_name, no_measurements, optimal_humidity, optimal_ph, max_salinity, optimal_light, optimal_temperature FROM Database_PyFlora_Pots'
+        QUERY_GET_ALL_POTS = 'SELECT pot_name, plant_name, no_measurements, optimal_humidity, optimal_ph, max_salinity, optimal_light, optimal_temperature, photo FROM Database_PyFlora_Pots'
 
         try:
             with sqlite3.connect(DB_NAME) as sql_connection:
@@ -49,7 +51,7 @@ class PyFloraPot:
                 for pot in data:
                     pot_class = PyFloraPot(pot[0], pot[1], pot[2], 
                                            pot[3], pot[4], pot[5], 
-                                           pot[6], pot[7]
+                                           pot[6], pot[7], pot[8]
                                            )
                     PyFloraPot.list_pots.append(pot_class)
                     PyFloraPot.all_pot_names.append(pot[0])
@@ -137,7 +139,6 @@ class PyFloraPot:
 
         #format datetime
         formatted_datetime= all_measurements.get('measured_datetime').strftime('%Y-%m-%d %H:%M:%S')
-        print('FORMATTED DATETIME', formatted_datetime)
 
         # update database with new measurements
         QUERIES_UPDATE_MEASUREMENTS = [

@@ -63,6 +63,23 @@ class InterfaceMain:
                                 command=self.root.destroy)
         logout_button.grid(row=1000, column=1, columnspan=2)
 
+        # testing
+                    
+        pot_name = PyFloraPot_list[0].pot_name
+        plant_name = PyFloraPot_list[0].plant_name
+        photo = PyFloraPot_list[0].photo
+
+        image_path = (f"Images\{PyFloraPot_list[0].plant_name}.jpg")
+        original_image = Image.open(image_path)
+        resized_image = original_image.resize((100, 100))
+
+        self.photo = ImageTk.PhotoImage(resized_image)
+        self.test_label = tk.Label(self.root, image=self.photo)
+        self.test_label.grid(row=2000, rowspan=3, column=1)
+
+        print('Pot name : ', pot_name)
+        print('Plant name : ', plant_name)
+
     def launch_InterfaceUserAccount(self):
         InterfaceUserAccount(self.root)
     

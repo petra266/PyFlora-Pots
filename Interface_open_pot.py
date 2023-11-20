@@ -3,6 +3,7 @@
 import tkinter as tk
 import sqlite3
 from tkinter import messagebox
+from PIL import Image, ImageTk
 
 from PyFlora_class import PyFloraPot
 
@@ -17,7 +18,9 @@ class InterfaceOpenPot:
         #retrieve pot information and save it into a class property
         self.POT_INFO = self.retrieve_pot_info()
     
-        self.interface_elements()
+        self.interface_plant_attributes()
+        self.interface_image()
+        self.interface_functions()
 
     def retrieve_pot_info(self):
         """ Retrieve all data from the Database_PyFlora_Pots and return it as a dictionary"""
@@ -41,7 +44,8 @@ class InterfaceOpenPot:
                     'max_salinity': data[5],
                     'optimal_light': data[6],
                     'optimal_temperature': data[7],
-                    'no_measurements': data[8],
+                    'photo' : data[8],
+                    'no_measurements': data[9],
                     'current_humidity': data[-5],
                     'current_ph': data[-4],
                     'current_salinity': data[-3],
@@ -133,14 +137,14 @@ class InterfaceOpenPot:
         self.update_current_measures_labels()
         self.update_needed_actions()
 
-    def interface_elements(self):
+    def interface_plant_attributes(self):
 
         # pot basic information
         pot_name_label = tk.Label(self.toplevel_open_pot, text="PyFlora Pot Name:   " + self.POT_INFO['pot_name'])
-        pot_name_label.grid(row=1, column=1)
+        pot_name_label.grid(row=1, column=2)
 
         plant_name_label = tk.Label(self.toplevel_open_pot, text="Plant name:   " + self.POT_INFO['plant_name'])
-        plant_name_label.grid(row=2, column=1)
+        plant_name_label.grid(row=2, column=2)
 
         # humidity
         optimal_humidity_label = tk.Label(self.toplevel_open_pot, text=f"Optimal humidity:   {self.POT_INFO['optimal_humidity']}")
@@ -192,7 +196,17 @@ class InterfaceOpenPot:
         self.temperature_action_label = tk.Label(self.toplevel_open_pot, text='-')
         self.temperature_action_label.grid(row=14, column=3)
 
-        # other
+    def interface_image(self):
+        
+        image_path = (f"Images\{self.POT_INFO['plant_name']}.jpg")
+        original_image = Image.open(image_path)
+        resized_image = original_image.resize((100, 100))
+
+        self.photo = ImageTk.PhotoImage(resized_image)
+        self.test_label = tk.Label(self.toplevel_open_pot, image=self.photo)
+        self.test_label.grid(row=1, rowspan=3, column=1)
+
+    def interface_functions(self):
         sync_button = tk.Button(self.toplevel_open_pot, text="Sync only this pot", command=self.sync)
         sync_button.grid(row=999, column=1)
 

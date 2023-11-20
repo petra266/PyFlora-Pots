@@ -1,6 +1,8 @@
 import tkinter as tk
 import sqlite3
 from tkinter import messagebox
+from tkinter import filedialog
+from PIL import Image, ImageTk
 
 
 class InterfaceManageLexicon:
@@ -10,7 +12,9 @@ class InterfaceManageLexicon:
         self.toplevel_manage_lexicon.title("Manage PyFlora Lexicon")
         self.toplevel_manage_lexicon.geometry('800x400')
 
-        self.interface_elements()      
+        self.interface_attributes()     
+        self.interface_image()
+        self.interface_functions() 
 
     def get_all_known_plant_names(self):
         """Returns the list of all plant names available in the lexicon."""
@@ -102,6 +106,13 @@ class InterfaceManageLexicon:
         """Button function - adds a new plant to Database_plants_lexicon if validated."""
         # activate validation function
         validation = self.validate_input()
+        
+        # save the plant image to the Images folder and get it's path
+        if validation:
+            self.photo_path = self.save_image()
+            self.photo = self.convert_image_to_blob(self.photo_path)
+
+        
         # insert the new plant into Database_plants_lexicon
         if validation:
             DB_NAME = 'Database_plants_lexicon.db'
@@ -109,13 +120,13 @@ class InterfaceManageLexicon:
             QUERY_INSERT = '''
             INSERT INTO Database_plants_lexicon 
             (plant_name, optimal_humidity, 
-            optimal_ph, max_salinity, optimal_light, optimal_temperature)
-            VALUES (?, ?, ?, ?, ?, ?)
+            optimal_ph, max_salinity, optimal_light, optimal_temperature, photo)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             '''
 
             VALUES_LIST = [
-                self.plant_name, self.optimal_humidity, self.optimal_ph, 
-                self.max_salinity, self.optimal_light, self.optimal_temperature
+                self.plant_name, self.optimal_humidity, self.optimal_ph, self.max_salinity, 
+                self.optimal_light, self.optimal_temperature, self.photo
                 ]
 
             try:
@@ -141,7 +152,9 @@ class InterfaceManageLexicon:
 
             for widget in self.toplevel_manage_lexicon.winfo_children():
                 widget.destroy()
-            self.interface_elements()
+            self.interface_attributes()
+            self.interface_image()
+            self.interface_functions()
             
     def erase_plant(self):
         ''' Deletes selected plant from the lexicon and PyFlora pots if plant selected'''
@@ -190,7 +203,35 @@ class InterfaceManageLexicon:
                 widget.destroy()
             self.interface_elements()            
 
-    def interface_elements(self):
+    def choose_image(self):
+        
+        self.image_path = filedialog.askopenfilename(parent=self.toplevel_manage_lexicon)
+        original_image = Image.open(self.image_path)
+        self.resized_image = original_image.resize((100, 100))
+        original_image.close()
+
+        self.show_image = ImageTk.PhotoImage(self.resized_image)
+        self.test_label = tk.Label(self.toplevel_manage_lexicon, image=self.show_image)
+        self.test_label.grid(row=7, rowspan=3, column=1)
+
+    def save_image(self):
+        ''' Saves the chosen image to Images folder '''
+
+        image_to_save = Image.open(self.image_path)
+        path_to_save = f'Images\{self.plant_name}.jpg'
+        print(path_to_save)
+
+        image_to_save.save(path_to_save)
+        image_to_save.close()
+
+        return path_to_save
+
+    def convert_image_to_blob(self, image_path):
+        with open(image_path, 'rb') as file:
+            blob_data = file.read()
+        return blob_data
+
+    def interface_attributes(self):
     
         # Define interface variables
         self.plant_name_input = tk.StringVar()
@@ -199,11 +240,6 @@ class InterfaceManageLexicon:
         self.max_salinity_input = tk.StringVar()
         self.optimal_light_input = tk.StringVar()
         self.optimal_temperature_input = tk.StringVar()
-        self.plant_to_erase = tk.StringVar()
-        self.DEFAULT_PLANT = "Choose a plant to erase:"
-        self.plant_to_erase.set(self.DEFAULT_PLANT)
-
-        all_known_plant_names = self.get_all_known_plant_names()
 
         # plant name
         name_label = tk.Label(self.toplevel_manage_lexicon, text='Name: ')
@@ -261,6 +297,20 @@ class InterfaceManageLexicon:
 
         temperature_unit_label = tk.Label(self.toplevel_manage_lexicon, text='°C')
         temperature_unit_label.grid(row=6, column=3)
+
+    def interface_image(self):
+
+        # add image
+        choose_image_button = tk.Button(self.toplevel_manage_lexicon, text="Choose image", command=self.choose_image)
+        choose_image_button.grid(row=7, column=2)
+    
+    def interface_functions(self):
+
+        self.plant_to_erase = tk.StringVar()
+        self.DEFAULT_PLANT = "Choose a plant to erase:"
+        self.plant_to_erase.set(self.DEFAULT_PLANT)
+
+        all_known_plant_names = self.get_all_known_plant_names()
 
         # add plant
         add_plant_button = tk.Button(self.toplevel_manage_lexicon, text="Add plant", command=self.add_plant) 

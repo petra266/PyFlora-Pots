@@ -106,12 +106,12 @@ class InterfaceAddPots:
             QUERY_INSERT_POT = '''
             INSERT INTO Database_PyFlora_Pots (pot_name,
                 plant_name, optimal_humidity, optimal_ph,
-                max_salinity, optimal_light, optimal_temperature, no_measurements)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                max_salinity, optimal_light, optimal_temperature, photo, no_measurements)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             '''
 
             new_pot = (self.new_pot.get(
-            ), data[0][1], data[0][2], data[0][3], data[0][4], data[0][5], data[0][6], 0)
+            ), data[0][1], data[0][2], data[0][3], data[0][4], data[0][5], data[0][6], data[0][7], 0)
 
             try:
                 with sqlite3.connect(DB_NAME) as sql_connection:
