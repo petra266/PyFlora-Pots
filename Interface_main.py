@@ -14,14 +14,25 @@ class InterfaceMain:
 
         self.create_buttons()
 
+    def retrieve_data(self):
+        df_success, df_error = PyFloraPot.get_dataframe_for_all_pots(PyFloraPot)
+
+        if not df_success:
+            print('Data retrieving unsucessful. Error: ', df_error)
+            messagebox.showerror(title='Error in retrieving data!',
+                                 message='Data retrieving unsucessful. Error: ' + str(df_error) + "\nPlease restart the application",
+                                 parent=self.root)
+    
     def create_buttons(self):        
+
+        self.retrieve_data()
 
         # remove all buttons
         for button in self.root.winfo_children():
             if isinstance(button, tk.Button):
                 button.destroy()
 
-        # Header and options - top_space to be used for button.grid calculations
+        # Header and settings - top_space, header to be used for button.grid calculations
         HEADER = 5
         account_button = tk.Button(self.root, text="User Account",
                             command=self.launch_InterfaceUserAccount)
@@ -32,10 +43,9 @@ class InterfaceMain:
         lexicon_button.grid(row=0, column=1)
 
         # Defining and arranging buttons for each PyFlora pot
-        PyFloraPot_list = PyFloraPot.update_pot_list(self)
-
-        if PyFloraPot.count_pots > 0:
-            for i in range(0, PyFloraPot.count_pots):
+        
+        if len(PyFloraPot.df.index) > 0:
+            for i in range(0, len(PyFloraPot.df.index)):
 
                 if i % 2 == 0:
                     button_row = i + HEADER
@@ -43,8 +53,7 @@ class InterfaceMain:
                 else: 
                     button_row = i - 1 + HEADER
                     button_column = 2
-                    
-                pot_name = PyFloraPot_list[i].pot_name
+                pot_name = PyFloraPot.df.loc[i, 'pot_name']
                 button = tk.Button(self.root, text=pot_name, command=lambda selected_name=pot_name: self.launch_InterfaceOpenPot(selected_name))
                 button.grid(row=button_row, column=button_column)
         elif PyFloraPot.count_pots == 0:
@@ -63,22 +72,15 @@ class InterfaceMain:
                                 command=self.root.destroy)
         logout_button.grid(row=1000, column=1, columnspan=2)
 
-        # testing
+        # testing photo
                     
-        pot_name = PyFloraPot_list[0].pot_name
-        plant_name = PyFloraPot_list[0].plant_name
-        photo = PyFloraPot_list[0].photo
-
-        image_path = (f"Images\{PyFloraPot_list[0].plant_name}.jpg")
+        image_path = (f"Images\{PyFloraPot.df['plant_name'][0]}.jpg")
         original_image = Image.open(image_path)
         resized_image = original_image.resize((100, 100))
 
         self.photo = ImageTk.PhotoImage(resized_image)
         self.test_label = tk.Label(self.root, image=self.photo)
         self.test_label.grid(row=2000, rowspan=3, column=1)
-
-        print('Pot name : ', pot_name)
-        print('Plant name : ', plant_name)
 
     def launch_InterfaceUserAccount(self):
         InterfaceUserAccount(self.root)
@@ -91,6 +93,7 @@ class InterfaceMain:
     def launch_InterfaceOpenPot(self, selected_name):
         # note the selected pot in the PyFloraPot class
         PyFloraPot.SELECTED_POT = selected_name
+        
         interface_open_pot = InterfaceOpenPot(self.root)
         self.root.wait_window(interface_open_pot.toplevel_open_pot)
         self.create_buttons()

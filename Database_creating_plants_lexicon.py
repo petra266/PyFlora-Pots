@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS Database_plants_lexicon (
     max_salinity INTEGER NOT NULL CHECK (max_salinity >= 0),
     optimal_light INTEGER NOT NULL CHECK (optimal_light >= 0),
     optimal_temperature INTEGER NOT NULL,
-    photo BLOB UNIQUE
+    photo BLOB
     );
 '''
 

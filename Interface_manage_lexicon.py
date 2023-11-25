@@ -201,7 +201,10 @@ class InterfaceManageLexicon:
             
             for widget in self.toplevel_manage_lexicon.winfo_children():
                 widget.destroy()
-            self.interface_elements()            
+
+            self.interface_attributes()     
+            self.interface_image()
+            self.interface_functions()         
 
     def choose_image(self):
         

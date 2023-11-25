@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS Database_PyFlora_Pots (
     max_salinity INTEGER NOT NULL CHECK (max_salinity >= 0),
     optimal_light INTEGER NOT NULL CHECK (optimal_light >= 0),
     optimal_temperature INTEGER NOT NULL,
-    photo BLOB UNIQUE,
+    photo BLOB,
     no_measurements INTEGER NOT NULL
     );
 '''

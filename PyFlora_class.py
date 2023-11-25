@@ -5,6 +5,7 @@ import random
 import requests
 from bs4 import BeautifulSoup
 import datetime
+import pandas as pd
 
 
 class PyFloraPot:
@@ -17,6 +18,7 @@ class PyFloraPot:
             optimal_humidity, optimal_ph, max_salinity, 
             optimal_light, optimal_temperature, photo
             ):
+        
         self.pot_name = pot_name
         self.plant_name = plant_name
         self.no_measurements = no_measurements
@@ -29,42 +31,36 @@ class PyFloraPot:
 
         self.photo = photo
         
-        PyFloraPot.count_pots += 1
-        
-    def update_pot_list(self):
-        
-        PyFloraPot.count_pots = 0
-        PyFloraPot.list_pots = []
-        PyFloraPot.all_pot_names = []
         PyFloraPot.max_no_measurements = 0
-
+        PyFloraPot.count_pots += 1
+    
+    def get_dataframe_for_all_pots(self):
+        '''retrieves data from the database for all pots 
+        and returns it as a dataframe or error'''
         DB_NAME = 'Database_PyFlora_Pots.db'
-        QUERY_GET_ALL_POTS = 'SELECT pot_name, plant_name, no_measurements, optimal_humidity, optimal_ph, max_salinity, optimal_light, optimal_temperature, photo FROM Database_PyFlora_Pots'
-
+        QUERY_GET_ALL_POTS = f'SELECT * FROM Database_PyFlora_Pots'
         try:
             with sqlite3.connect(DB_NAME) as sql_connection:
-                cursor = sql_connection.cursor()
-
-                cursor.execute(QUERY_GET_ALL_POTS)
-                data = cursor.fetchall()
-                all_no_measurements = []
-                for pot in data:
-                    pot_class = PyFloraPot(pot[0], pot[1], pot[2], 
-                                           pot[3], pot[4], pot[5], 
-                                           pot[6], pot[7], pot[8]
-                                           )
-                    PyFloraPot.list_pots.append(pot_class)
-                    PyFloraPot.all_pot_names.append(pot[0])
-                    all_no_measurements.append(pot[2])
-                
-                if PyFloraPot.count_pots > 0:
-                    PyFloraPot.max_no_measurements = max(all_no_measurements)
-                print("All PyFlora Pot names retrived.")
-                return PyFloraPot.list_pots
+                PyFloraPot.df = pd.read_sql(QUERY_GET_ALL_POTS, con=sql_connection)
+                PyFloraPot.max_no_measurements = PyFloraPot.df['no_measurements'].max()
+                return True, None
+            
+        except sqlite3.Error as e:
+            return False, e    
+        
+    def get_dataframe_for_opened_pot(self, pot_name):
+        '''retrieves data from the database for selected pot 
+        and returns it as a dataframe or error'''
+        DB_NAME = 'Database_PyFlora_Pots.db'
+        QUERY_GET_OPENED_POT = f'SELECT * FROM Database_PyFlora_Pots WHERE pot_name="{pot_name}"'
+        try:
+            with sqlite3.connect(DB_NAME) as sql_connection:
+                PyFloraPot.df = pd.read_sql(QUERY_GET_OPENED_POT, con=sql_connection)
+                PyFloraPot.max_no_measurements = PyFloraPot.df['no_measurements'].max()
+                return True, None
 
         except sqlite3.Error as e:
-            messagebox.showerror(title='Error in retrieving data',
-                                 message='Data retrieving unsucessful. Error: ' + str(e))
+            return False, e
 
     def webscrape_temperature(self, url):
         ''' Returns the value of temperature from the provided url '''
@@ -157,15 +153,15 @@ class PyFloraPot:
         formatted_datetime = measured_datetime.strftime('%Y-%m-%d %H:%M:%S')
         
         for pot in PyFloraPot.list_pots:
-            if pot.pot_name in pots_to_sync:
+            if pot in pots_to_sync:
             # update database with new measurements
                 QUERIES_OPTIMIZE_MEASUREMENTS = [
                 f"datetime{new_measurement_no} = '{formatted_datetime}'",
-                f"humidity{new_measurement_no} = {pot.optimal_humidity}",
-                f"ph{new_measurement_no} = {pot.optimal_ph}",
+                f"humidity{new_measurement_no} = {PyFloraPot.df.loc[pot, 'optimal_humidity']}",
+                f"ph{new_measurement_no} = {PyFloraPot.df.loc[pot, 'optimal_ph']}",
                 f"salinity{new_measurement_no} = 0",
-                f"light{new_measurement_no} = {pot.optimal_light}",
-                f"temperature{new_measurement_no} = {pot.optimal_temperature}",
+                f"light{new_measurement_no} = {PyFloraPot.df.loc[pot, 'optimal_light']}",
+                f"temperature{new_measurement_no} = {PyFloraPot.df.loc[pot, 'optimal_temperature']}",
                 f"no_measurements = {new_measurement_no}"
             ]
         return QUERIES_OPTIMIZE_MEASUREMENTS
@@ -196,15 +192,18 @@ class PyFloraPot:
             print('Creating new columns in the database unsuccessful. Error: ', e)
     
     def save_measurements(self, pots_to_sync, generated):
+        success = True
 
-        PyFloraPot.list_pots = self.update_pot_list(PyFloraPot)
-        DB_NAME = 'Database_PyFlora_Pots.db'      
+        self.get_dataframe_for_all_pots(PyFloraPot)
         
+        PyFloraPot.list_pots = PyFloraPot.df['pot_name'].values.flatten().tolist()
+        DB_NAME = 'Database_PyFlora_Pots.db'      
         for pot in PyFloraPot.list_pots:
-            if pot.pot_name in pots_to_sync:
-                # get number of measurement for the selected pot 
+            if pot in pots_to_sync:
+                                # get number of measurement for the selected pot 
                 # compare it to the highest measurement to see whether new column is necessary
-                new_measurement_no = pot.no_measurements + 1
+                PyFloraPot.df.set_index('pot_name', inplace=True)
+                new_measurement_no = PyFloraPot.df.loc[pot, 'no_measurements'] + 1
                 if new_measurement_no > PyFloraPot.max_no_measurements:
                     self.create_new_measurement_columns(PyFloraPot, DB_NAME, new_measurement_no)
                 
@@ -219,13 +218,21 @@ class PyFloraPot:
                     with sqlite3.connect(DB_NAME) as sql_connection:
                         cursor = sql_connection.cursor()
                         for column in QUERY_UPDATE_MEASUREMENTS:
-                            cursor.execute(f'UPDATE Database_PyFlora_Pots SET {column} WHERE pot_name = "{pot.pot_name}"')
+                            cursor.execute(f'UPDATE Database_PyFlora_Pots SET {column} WHERE pot_name = "{pot}"')
                         sql_connection.commit()
                         print("Successfully inserted the new measurements into the database.")
 
                 except sqlite3.Error as e:
                     print('Inserting new measurements into the database unsucessful. Error: ', e)
+                    success = False
+        if success:
+            return True
+        else:
+            return False   
                                             
     def sync(self, pots_to_sync, generated):
-        self.update_pot_list(PyFloraPot)
-        self.save_measurements(PyFloraPot, pots_to_sync, generated)
+
+        self.df = self.get_dataframe_for_all_pots(PyFloraPot)
+        syncing_success = self.save_measurements(PyFloraPot, pots_to_sync, generated)
+        
+        return syncing_success
