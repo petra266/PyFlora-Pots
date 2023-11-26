@@ -48,20 +48,19 @@ class InterfaceAddPots:
         # validate the chosen pot_name is available
         validation = True
         ALL_POT_NAMES = list(PyFloraPot.df['pot_name'])
-        print('ALL_POT_NAMES:   ', ALL_POT_NAMES)
-        print('ONE POT NAME:    ', ALL_POT_NAMES[0])
 
-        for i in range(0, len(ALL_POT_NAMES)):
-            if self.new_pot.get() == ALL_POT_NAMES[i]:
-                validation = False
-                messagebox.showwarning(title='PyFlora pot already in use!',
-                                       message='Please choose another name for the PyFlora pot.',
-                                       parent=self.toplevel_add_pots)
-            if self.new_pot.get() == "":
-                validation = False
-                messagebox.showwarning(title='No name given!',
-                                       message='Please choose a name for the PyFlora pot.',
-                                       parent=self.toplevel_add_pots)
+        if len(ALL_POT_NAMES) > 0:
+            for i in range(0, len(ALL_POT_NAMES)):
+                if self.new_pot.get() == ALL_POT_NAMES[i]:
+                    validation = False
+                    messagebox.showwarning(title='PyFlora pot already in use!',
+                                        message='Please choose another name for the PyFlora pot.',
+                                        parent=self.toplevel_add_pots)
+                if self.new_pot.get() == "":
+                    validation = False
+                    messagebox.showwarning(title='No name given!',
+                                        message='Please choose a name for the PyFlora pot.',
+                                        parent=self.toplevel_add_pots)
         # check a plant is chosen from the menu
         if self.chosen_plant.get() == self.DEFAULT_PLANT:
             validation = False

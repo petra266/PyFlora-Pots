@@ -262,7 +262,7 @@ class InterfaceManageLexicon:
         humidity_unit_label.grid(row=2, column=3)
 
         # ph
-        optimal_ph_label = tk.Label(self.toplevel_manage_lexicon, text='Optimal PH: ')
+        optimal_ph_label = tk.Label(self.toplevel_manage_lexicon, text='Optimal pH: ')
         optimal_ph_label.grid(row=3, column=1)
 
         optimal_ph_entry = tk.Entry(self.toplevel_manage_lexicon, textvariable=self.optimal_ph_input)

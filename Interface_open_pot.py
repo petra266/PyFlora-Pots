@@ -1,22 +1,24 @@
 """ GUI for inspecting data for each PyFlora Pot """
 
 import tkinter as tk
-import sqlite3
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.ticker import MaxNLocator
 from tkinter import messagebox
 from PIL import Image, ImageTk
 
-from PyFlora_class import PyFloraPot
-from Data_visualization import *
+import sqlite3
 
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from PyFlora_class import PyFloraPot
 
 class InterfaceOpenPot:
 
     def __init__(self, root):
         self.toplevel_open_pot = tk.Toplevel(root)
         self.toplevel_open_pot.title("PyFlora Pots - " + PyFloraPot.SELECTED_POT)
-        self.toplevel_open_pot.geometry('800x400')
-        
-        # retrieve pot information as dataframe self.df
+        self.toplevel_open_pot.geometry('1200x600')
         
         self.retrieve_pot_info()
 
@@ -24,8 +26,8 @@ class InterfaceOpenPot:
         self.interface_image()
         self.interface_functions()
         if PyFloraPot.df['no_measurements'][0] > 0:
-            self.complete_actions()
-        #self.data_visualization()
+            self.update_needed_actions()
+            self.visualization_plots()
 
     def retrieve_pot_info(self):
         """ Retrieve all data from the Database_PyFlora_Pots and return it as a dictionary"""
@@ -77,7 +79,7 @@ class InterfaceOpenPot:
 
     def update_current_measurements_labels(self):
         self.current_humidity_label.config(text=f"Current humidity:   {self.current_humidity}")
-        self.current_ph_label.config(text=f"Current PH:   {self.current_ph}")
+        self.current_ph_label.config(text=f"Current pH:   {self.current_ph}")
         self.current_salinity_label.config(text=f"Current salinity:   {self.current_salinity}")
         self.current_light_label.config(text=f"Current light exposure:   {self.current_light}")
         self.current_temperature_label.config(text=f"Current temperature:   {self.current_temperature}")
@@ -116,6 +118,7 @@ class InterfaceOpenPot:
         self.retrieve_pot_info()
         self.update_current_measurements_labels()
         self.update_needed_actions()
+        self.visualization_plots()
 
     def complete_actions(self):
         optimizing_success = PyFloraPot.sync(PyFloraPot, PyFloraPot.df['pot_name'][0], generated=False) # returns an error message if syncing unsucessful
@@ -127,6 +130,139 @@ class InterfaceOpenPot:
         self.retrieve_pot_info()
         self.update_current_measurements_labels()
         self.update_needed_actions()
+        self.visualization_plots()
+
+    def visualization_get_axes(self):
+        # create lists of all columns measuring the same attribute
+        all_datetime_columns = []
+        all_no_measurements = []
+        all_humidity_columns = []
+        all_ph_columns = []
+        all_salinity_columns = []
+        all_light_columns = []
+        all_temperature_columns = []
+
+        for column in PyFloraPot.df.columns:
+            if column.startswith('no_measurement'):
+                all_no_measurements.append(column)
+            elif column.startswith('humidity'):
+                all_humidity_columns.append(column)
+            elif column.startswith('ph') and not column.startswith('photo'):
+                all_ph_columns.append(column)
+            elif column.startswith('salinity'):
+                all_salinity_columns.append(column)
+            elif column.startswith('light'):
+                all_light_columns.append(column)
+            elif column.startswith('temperature'):
+                all_temperature_columns.append(column)
+
+        # change all datetime measures into a datetime type
+        for i in all_datetime_columns:
+            PyFloraPot.df[i] = pd.to_datetime(PyFloraPot.df[i])
+
+        # create list of values for all attributes
+
+        humidity_series = PyFloraPot.df[all_humidity_columns]
+        humidity_values = humidity_series.values.flatten().tolist()
+        humidity_values = [value for value in humidity_values if value is not None]
+
+        ph_series = PyFloraPot.df[all_ph_columns]
+        ph_values = ph_series.values.flatten().tolist()
+        ph_values = [value for value in ph_values if value is not None]
+
+        salinity_series = PyFloraPot.df[all_salinity_columns]
+        salinity_values = salinity_series.values.flatten().tolist()
+        salinity_values = [value for value in salinity_values if value is not None]
+
+        light_series = PyFloraPot.df[all_light_columns]
+        light_values = light_series.values.flatten().tolist()
+        light_values = [value for value in light_values if value is not None]
+
+        temperature_series = PyFloraPot.df[all_temperature_columns]
+        temperature_values = temperature_series.values.flatten().tolist()
+        temperature_values = [value for value in temperature_values if value is not None]
+
+        # get total number of measurements
+        all_no_measurements = [i for i in range(1, len(humidity_values) + 1)]
+
+        all_axes = {
+            'all_no_measurements' : all_no_measurements,
+            'humidity_values' : humidity_values,
+            'ph_values' : ph_values,
+            'salinity_values' : salinity_values,
+            'light_values' : light_values,
+            'temperature_values' : temperature_values
+        }
+
+        return all_axes
+
+    def visualization_plots(self):
+        self.all_axes = self.visualization_get_axes()
+
+        # remove all plots
+        for plot in self.toplevel_open_pot.winfo_children():
+            if isinstance(plot, FigureCanvasTkAgg):
+                plot.destroy()
+
+        # temperature plot
+        self.plot1, self.ax1 = plt.subplots(figsize=(0.2, 0.1))
+
+        self.canvas1 = FigureCanvasTkAgg(self.plot1, master=self.toplevel_open_pot)
+        self.canvas1.get_tk_widget().grid(row=1001, column=1, ipadx=170, ipady=140)
+
+        self.ax1.plot(self.all_axes['all_no_measurements'], self.all_axes['temperature_values'], label='Temperature')
+
+        self.ax1.set_xlabel('Number of measurement', fontsize=7.5)
+        self.ax1.set_ylabel('Temperature in C', fontsize=7.5)
+
+        self.ax1.set_title('Temperature Measurements', fontsize=8)
+        self.ax1.tick_params(axis='both', which='both', labelsize=6)
+        self.ax1.xaxis.set_major_locator(MaxNLocator(integer=True)) 
+        self.canvas1.draw()
+
+        # humidity plot
+        self.plot2, self.ax2 = plt.subplots(figsize=(0.2, 0.1))
+
+        self.canvas2 = FigureCanvasTkAgg(self.plot2, master=self.toplevel_open_pot)
+        self.canvas2.get_tk_widget().grid(row=1001, column=2, ipadx=170, ipady=140)
+
+        self.ax2.bar(self.all_axes['all_no_measurements'], self.all_axes['humidity_values'], label='Humidity')
+
+        self.ax2.set_xlabel('Number of measurement', fontsize=7.5)
+        self.ax2.set_ylabel('Humidity in %', fontsize=7.5)
+
+        self.ax2.set_title('Humidity Measurements', fontsize=8)
+        self.ax2.tick_params(axis='both', which='both', labelsize=6)
+        self.ax2.xaxis.set_major_locator(MaxNLocator(integer=True))
+        self.canvas2.draw()
+
+
+        # salinity plot
+        self.plot3, self.ax3 = plt.subplots(figsize=(0.2, 0.1))
+
+        self.canvas3 = FigureCanvasTkAgg(self.plot3, master=self.toplevel_open_pot)
+        self.canvas3.get_tk_widget().grid(row=1001, column=3, ipadx=170, ipady=140)
+
+        salinitiy_over_ceiling = 0
+        salinity_within_ceiling = 0
+
+        for i in self.all_axes['salinity_values']:
+            if i > PyFloraPot.df['max_salinity'][0]:
+                salinitiy_over_ceiling += 1
+            else:
+                salinity_within_ceiling += 1
+
+        salinity_values_groups  = [salinity_within_ceiling, salinitiy_over_ceiling]
+        self.ax3.pie(salinity_values_groups)
+
+        self.ax3.pie(salinity_values_groups, 
+                     labels=['Salinity within Ceiling', 'Salinity over Ceiling'], 
+                     colors=['green', 'darkred'], 
+                     autopct='%1.1f%%', startangle=90)
+
+        self.ax3.set_title('Salinity Measurements', fontsize=8)
+        self.ax3.tick_params(axis='both', which='both', labelsize=6)
+        self.canvas3.draw()
 
     def interface_plant_attributes(self):
 
@@ -148,10 +284,10 @@ class InterfaceOpenPot:
         self.humidity_action_label.grid(row=10, column=3)
 
         # PH
-        optimal_ph_label = tk.Label(self.toplevel_open_pot, text=f"Optimal PH:   {PyFloraPot.df['optimal_ph'][0]}")
+        optimal_ph_label = tk.Label(self.toplevel_open_pot, text=f"Optimal pH:   {PyFloraPot.df['optimal_ph'][0]}")
         optimal_ph_label.grid(row=11, column=1)
         
-        self.current_ph_label = tk.Label(self.toplevel_open_pot, text=f"Current PH:   {self.current_ph}")
+        self.current_ph_label = tk.Label(self.toplevel_open_pot, text=f"Current pH:   {self.current_ph}")
         self.current_ph_label.grid(row=11, column=2)
 
         self.ph_action_label = tk.Label(self.toplevel_open_pot, text='-')
