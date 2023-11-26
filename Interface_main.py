@@ -27,19 +27,25 @@ class InterfaceMain:
 
         self.retrieve_data()
 
-        # remove all buttons
-        for i in self.root.winfo_children():
-            i.destroy()
+        # remove buttons and labels
+        for widget in self.root.winfo_children():
+            if isinstance(widget, (tk.Button, tk.Label)):
+                widget.destroy()
 
         # Header and settings - top_space, header to be used for button.grid calculations
         HEADER = 5
+        
+        logout_button = tk.Button(self.root, text="Log Out",
+                                command=self.root.destroy)
+        logout_button.grid(row=0, column=0)
+        
         account_button = tk.Button(self.root, text="User Account",
                             command=self.launch_InterfaceUserAccount)
-        account_button.grid(row=0, column=2)
+        account_button.grid(row=0, column=4)
 
         lexicon_button = tk.Button(self.root, text='Manage Lexicon',
                             command=self.launch_InterfaceManageLexicon)
-        lexicon_button.grid(row=0, column=1)
+        lexicon_button.grid(row=0, column=3)
 
         # Defining and arranging buttons for each PyFlora pot
         
@@ -55,21 +61,14 @@ class InterfaceMain:
                     button_row = i + HEADER
                     button_column = 3
 
-                # if i % 2 == 0:
-                #     button_row = i + HEADER
-                #     button_column = 1
-                # else: 
-                #     button_row = i - 1 + HEADER
-                #     button_column = 2
-
                 pot_name = PyFloraPot.df.loc[i, 'pot_name']
-                plant_name = PyFloraPot.df.loc[i, 'plant_name']
                 current_measurement = PyFloraPot.df.loc[i, 'no_measurements']
                 attention_needed = ''
-                
+                                
                 if current_measurement > 0 :
+                    
                     # check humidity - accepted deviation +/- 15% 
-                    if abs(PyFloraPot.df.loc[i, 'optimal_humidity']- PyFloraPot.df.loc[i, f'humidity{current_measurement}']) >= 15:
+                    if abs(PyFloraPot.df.loc[i, 'optimal_humidity'] - PyFloraPot.df.loc[i, f'humidity{current_measurement}']) >= 15:
                         attention_needed = 'Attention needed!'
 
                     # ph - accepted deviation +/- 1,5
@@ -77,16 +76,17 @@ class InterfaceMain:
                         attention_needed = 'Attention needed!'
 
                     # salinity - has to be below limit
-                    if (PyFloraPot.df.loc[i, 'max_salinity'] > PyFloraPot.df.loc[i, f'salinity{current_measurement}']):
+                    if (PyFloraPot.df.loc[i, 'max_salinity'] < PyFloraPot.df.loc[i, f'salinity{current_measurement}']):
                         attention_needed = 'Attention needed!'
                     
                     # light - accepted deviation +/- 100 PAR
-                    if abs(PyFloraPot.df.loc[i, 'optimal_light'] - PyFloraPot.df.loc[i, f'light{current_measurement}']) < 150:
+                    if abs(PyFloraPot.df.loc[i, 'optimal_light'] - PyFloraPot.df.loc[i, f'light{current_measurement}']) > 150:
                         attention_needed = 'Attention needed!'
 
                     # temperature - accepted deviation +/- 8 degrees
-                    if abs(PyFloraPot.df.loc[i, 'optimal_temperature'] - PyFloraPot.df.loc[i, f'temperature{current_measurement}']) < 8:
+                    if abs(PyFloraPot.df.loc[i, 'optimal_temperature'] - PyFloraPot.df.loc[i, f'temperature{current_measurement}']) > 8:
                         attention_needed = 'Attention needed!'
+
 
                 # show image
                 image_path = (f"Images\{PyFloraPot.df.loc[i, 'plant_name']}.jpg")
@@ -105,6 +105,15 @@ class InterfaceMain:
                 # show action
                 attention_label = tk.Label(self.root, text=attention_needed)
                 attention_label.grid(row=button_row + 1, column=button_column + 1)
+
+                # attention_var = tk.StringVar(value=attention_needed)
+                # attention_label = tk.Label(self.root, textvariable=attention_var)
+                # attention_label.grid(row=button_row + 1, column=button_column + 1)
+
+                # Set attention_needed to the StringVar
+                #attention_var.set(attention_needed)
+
+
             
         elif len(PyFloraPot.df.index) == 0:
             button_row = 1
@@ -118,19 +127,6 @@ class InterfaceMain:
         sync_button = tk.Button(self.root, text="Sync all pots", command=self.sync)
         sync_button.grid(row=button_row + 2 + HEADER, column=1, columnspan=2)
 
-        logout_button = tk.Button(self.root, text="Log Out",
-                                command=self.root.destroy)
-        logout_button.grid(row=1000, column=1, columnspan=2)
-
-        # testing photo
-                    
-        # image_path = (f"Images\{PyFloraPot.df['plant_name'][0]}.jpg")
-        # original_image = Image.open(image_path)
-        # resized_image = original_image.resize((100, 100))
-
-        # self.photo = ImageTk.PhotoImage(resized_image)
-        # self.test_label = tk.Label(self.root, image=self.photo)
-        # self.test_label.grid(row=2000, rowspan=3, column=1)
 
     def launch_InterfaceUserAccount(self):
         InterfaceUserAccount(self.root)
