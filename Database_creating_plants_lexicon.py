@@ -39,7 +39,7 @@ INSERT INTO Database_plants_lexicon
 optimal_ph, max_salinity, optimal_light, optimal_temperature, photo)
 VALUES (?, ?, ?, ?, ?, ?, ?)
 '''
-
+'''
 INSERT_DICT = [
     {'plant_name': 'Basil (Ocimum basilicum)',
      'optimal_humidity': 60,
@@ -65,73 +65,83 @@ INSERT_DICT = [
      'optimal_ph': 6,
      'max_salinity': 2,
      'optimal_light': 350,
-     'optimal_temperature': 24
+     'optimal_temperature': 24,
+     'photo' : convert_image_to_blob(os.path.join(IMAGES_FOLDER, 'Basil (Ocimum basilicum).jpg'))
      },
     {'plant_name': 'Hibiscus (Hibiscus rosa-sinensis)',
      'optimal_humidity': 65,
      'optimal_ph': 6,
      'max_salinity': 2,
      'optimal_light': 350,
-     'optimal_temperature': 24
+     'optimal_temperature': 24,
+     'photo' : convert_image_to_blob(os.path.join(IMAGES_FOLDER, 'Hibiscus (Hibiscus rosa-sinensis).jpg'))
      },
     {'plant_name': 'Spider Plant (Chlorophytum comosum)',
      'optimal_humidity': 40,
      'optimal_ph': 6,
      'max_salinity': 1.5,
      'optimal_light': 200,
-     'optimal_temperature': 18
+     'optimal_temperature': 18,
+     'photo' : convert_image_to_blob(os.path.join(IMAGES_FOLDER, 'Spider Plant (Chlorophytum comosum).jpg'))
      },
     {'plant_name': 'Snake Plant (Sansevieria trifasciata)',
      'optimal_humidity': 40,
      'optimal_ph': 6.5,
      'max_salinity': 2,
      'optimal_light': 150,
-     'optimal_temperature': 18
+     'optimal_temperature': 18,
+     'photo' : convert_image_to_blob(os.path.join(IMAGES_FOLDER, 'Snake Plant (Sansevieria trifasciata).jpg'))
      },
     {'plant_name': 'Peace Lily (Spathiphyllum spp.)',
      'optimal_humidity': 40,
      'optimal_ph': 6.5,
      'max_salinity': 1.5,
      'optimal_light': 150,
-     'optimal_temperature': 22
+     'optimal_temperature': 22,
+     'photo' : convert_image_to_blob(os.path.join(IMAGES_FOLDER, 'Peace Lily (Spathiphyllum spp.).jpg'))
      },
     {'plant_name': 'Aloe Vera (Aloe barbadensis miller)',
      'optimal_humidity': 30,
      'optimal_ph': 6,
      'max_salinity': 1.5,
      'optimal_light': 200,
-     'optimal_temperature': 22
+     'optimal_temperature': 22,
+     'photo' : convert_image_to_blob(os.path.join(IMAGES_FOLDER, 'Aloe Vera (Aloe barbadensis miller).jpg'))
      },
     {'plant_name': 'ZZ Plant (Zamioculcas zamiifolia)',
      'optimal_humidity': 40,
      'optimal_ph': 6,
      'max_salinity': 1.5,
      'optimal_light': 150,
-     'optimal_temperature': 18
+     'optimal_temperature': 18,
+     'photo' : convert_image_to_blob(os.path.join(IMAGES_FOLDER, 'ZZ Plant (Zamioculcas zamiifolia).jpg'))
      },
     {'plant_name': 'Fiddle Leaf Fig (Ficus lyrata)',
      'optimal_humidity': 50,
      'optimal_ph': 6,
      'max_salinity': 2,
      'optimal_light': 300,
-     'optimal_temperature': 24
+     'optimal_temperature': 24,
+     'photo' : convert_image_to_blob(os.path.join(IMAGES_FOLDER, 'Fiddle Leaf Fig (Ficus lyrata).jpg'))
      },
     {'plant_name': 'Jade Plant (Crassula ovata)',
      'optimal_humidity': 40,
      'optimal_ph': 6.5,
      'max_salinity': 1.5,
      'optimal_light': 200,
-     'optimal_temperature': 20
+     'optimal_temperature': 20,
+     'photo' : convert_image_to_blob(os.path.join(IMAGES_FOLDER, 'Jade Plant (Crassula ovata).jpg'))
      },
     {'plant_name': 'Boston Fern (Nephrolepis exaltata)',
      'optimal_humidity': 60,
      'optimal_ph': 5.5,
      'max_salinity': 1.5,
      'optimal_light': 200,
-     'optimal_temperature': 18
+     'optimal_temperature': 18,
+     'photo' : convert_image_to_blob(os.path.join(IMAGES_FOLDER, 'Boston Fern (Nephrolepis exaltata).jpg'))
      }
 ]
-'''
+
 
 INSERT_LIST = []
 for i in INSERT_DICT:
