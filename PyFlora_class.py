@@ -196,14 +196,16 @@ class PyFloraPot:
 
         self.get_dataframe_for_all_pots(PyFloraPot)
         
-        PyFloraPot.list_pots = PyFloraPot.df['pot_name'].values.flatten().tolist()
+        PyFloraPot.list_pots = list(PyFloraPot.df['pot_name'])
+        print('PRINTING 1:   ', PyFloraPot.list_pots)
+
         DB_NAME = 'Database_PyFlora_Pots.db'      
         for pot in PyFloraPot.list_pots:
             if pot in pots_to_sync:
-                                # get number of measurement for the selected pot 
+                # get number of measurement for the selected pot 
                 # compare it to the highest measurement to see whether new column is necessary
-                PyFloraPot.df.set_index('pot_name', inplace=True)
-                new_measurement_no = PyFloraPot.df.loc[pot, 'no_measurements'] + 1
+                new_measurement_no = PyFloraPot.df.loc[PyFloraPot.df['pot_name'] == pot, 'no_measurements'].values[0] + 1
+                print('PRINTING NEW MEASUREMENT:    ', new_measurement_no)
                 if new_measurement_no > PyFloraPot.max_no_measurements:
                     self.create_new_measurement_columns(PyFloraPot, DB_NAME, new_measurement_no)
                 
@@ -226,13 +228,13 @@ class PyFloraPot:
                     print('Inserting new measurements into the database unsucessful. Error: ', e)
                     success = False
         if success:
-            return True
+            return True, None
         else:
-            return False   
+            return False, e
                                             
     def sync(self, pots_to_sync, generated):
 
         self.df = self.get_dataframe_for_all_pots(PyFloraPot)
-        syncing_success = self.save_measurements(PyFloraPot, pots_to_sync, generated)
+        syncing_success, syncing_error = self.save_measurements(PyFloraPot, pots_to_sync, generated)
         
-        return syncing_success
+        return syncing_success, syncing_error
