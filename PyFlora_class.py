@@ -157,11 +157,11 @@ class PyFloraPot:
             # update database with new measurements
                 QUERIES_OPTIMIZE_MEASUREMENTS = [
                 f"datetime{new_measurement_no} = '{formatted_datetime}'",
-                f"humidity{new_measurement_no} = {PyFloraPot.df.loc[pot, 'optimal_humidity']}",
-                f"ph{new_measurement_no} = {PyFloraPot.df.loc[pot, 'optimal_ph']}",
+                f"humidity{new_measurement_no} = {PyFloraPot.df.loc[PyFloraPot.df['pot_name'] == pot, 'optimal_humidity'].values[0]}",
+                f"ph{new_measurement_no} = {PyFloraPot.df.loc[PyFloraPot.df['pot_name'] == pot, 'optimal_ph'].values[0]}",
                 f"salinity{new_measurement_no} = 0",
-                f"light{new_measurement_no} = {PyFloraPot.df.loc[pot, 'optimal_light']}",
-                f"temperature{new_measurement_no} = {PyFloraPot.df.loc[pot, 'optimal_temperature']}",
+                f"light{new_measurement_no} = {PyFloraPot.df.loc[PyFloraPot.df['pot_name'] == pot, 'optimal_light'].values[0]}",
+                f"temperature{new_measurement_no} = {PyFloraPot.df.loc[PyFloraPot.df['pot_name'] == pot, 'optimal_temperature'].values[0]}",
                 f"no_measurements = {new_measurement_no}"
             ]
         return QUERIES_OPTIMIZE_MEASUREMENTS
