@@ -10,7 +10,7 @@ class InterfaceMain:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("PyFlora Pots")
-        self.root.geometry('800x400')
+        self.root.geometry('600x600')
 
         self.create_buttons()
 
@@ -37,15 +37,15 @@ class InterfaceMain:
         
         logout_button = tk.Button(self.root, text="Log Out",
                                 command=self.root.destroy)
-        logout_button.grid(row=0, column=0)
-        
-        account_button = tk.Button(self.root, text="User Account",
-                            command=self.launch_InterfaceUserAccount)
-        account_button.grid(row=0, column=4)
+        logout_button.grid(row=0, column=1, pady=(0, 30), ipadx=5, ipady=5)
 
         lexicon_button = tk.Button(self.root, text='Manage Lexicon',
                             command=self.launch_InterfaceManageLexicon)
-        lexicon_button.grid(row=0, column=3)
+        lexicon_button.grid(row=0, column=4, pady=(0, 30), ipadx=5, ipady=5)
+
+        account_button = tk.Button(self.root, text="User Account",
+                            command=self.launch_InterfaceUserAccount)
+        account_button.grid(row=0, column=5, pady=(0, 30), ipadx=5, ipady=5)
 
         # Defining and arranging buttons for each PyFlora pot
         
@@ -96,24 +96,15 @@ class InterfaceMain:
                 image_list.append(ImageTk.PhotoImage(resized_image))
                 photo_label = tk.Label(self.root, image=image_list[-1])
                 photo_label.image = image_list[-1]
-                photo_label.grid(row=button_row, rowspan=2, column=button_column, ipadx=10, ipady=10)
+                photo_label.grid(row=button_row, rowspan=2, column=button_column, padx=(15, 0), ipadx=10, ipady=10)
 
                 # show button
                 button = tk.Button(self.root, text=pot_name, command=lambda selected_name=pot_name: self.launch_InterfaceOpenPot(selected_name))
-                button.grid(row=button_row, column=button_column + 1)
+                button.grid(row=button_row, column=button_column + 1, ipadx=10, ipady=10)
 
                 # show action
                 attention_label = tk.Label(self.root, text=attention_needed)
                 attention_label.grid(row=button_row + 1, column=button_column + 1)
-
-                # attention_var = tk.StringVar(value=attention_needed)
-                # attention_label = tk.Label(self.root, textvariable=attention_var)
-                # attention_label.grid(row=button_row + 1, column=button_column + 1)
-
-                # Set attention_needed to the StringVar
-                #attention_var.set(attention_needed)
-
-
             
         elif len(PyFloraPot.df.index) == 0:
             button_row = 1
@@ -122,10 +113,10 @@ class InterfaceMain:
         # Other buttons
         add_button = tk.Button(self.root, text="Add new pot",
                             command=self.launch_InterfaceAddPots)
-        add_button.grid(row=button_row + 1 + HEADER, column=1, columnspan=2)
+        add_button.grid(row=button_row + 1 + HEADER, column=1, columnspan=2, pady=30, ipadx=10, ipady=10)
 
         sync_button = tk.Button(self.root, text="Sync all pots", command=self.sync)
-        sync_button.grid(row=button_row + 2 + HEADER, column=1, columnspan=2)
+        sync_button.grid(row=button_row + 1 + HEADER, column=3, columnspan=2, pady=30, ipadx=10, ipady=10)
 
 
     def launch_InterfaceUserAccount(self):
