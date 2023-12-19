@@ -9,7 +9,7 @@ PyFlora Pot is designed to help you manage and monitor your plants in an easy an
 Python 3.9
 Python packages:
 * beautifulsoup4
-* mathplotlib
+* matplotlib
 * pandas
 * PIL
 
