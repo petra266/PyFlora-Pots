@@ -1,16 +1,104 @@
 import tkinter as tk
+from datetime import datetime, time
+
+import Database_creating_plants_lexicon
+import Database_creating_users
+import Database_creating_PyFlora_Pots
 
 from PyFlora_class import PyFloraPot
+
 from Interface_add_pots import *
 from Interface_open_pot import *
 from Interface_user_account import *
 from Interface_manage_lexicon import *
 
+class InterfaceLogin:
+    def __init__(self):
+        self.root_login = tk.Tk()
+        self.root_login.title('PyFlora Pots Login')
+        self.root_login.geometry('250x150')
+
+        self.username = tk.StringVar()
+        self.password = tk.StringVar()
+
+        self.interface()
+
+    def login(self):
+        DB_NAME = 'Database_users.db'
+        QUERY_GET_PASSWORD = 'SELECT password, firstname FROM Database_users WHERE username ='
+        NOON = time(12, 0)
+        EVENING = time(18, 0)
+        
+        now = datetime.now()
+        now_time = time(now.hour, now.minute)
+        success = False
+        name = None
+        try:
+            sqlite_connection = sqlite3.connect(DB_NAME)
+            cursor = sqlite_connection.cursor()
+            query = QUERY_GET_PASSWORD + '"{}"'.format(self.username.get())
+            cursor.execute(query)
+            records = cursor.fetchall()
+            if records:
+                password_input = records[0][0]
+                name = records[0][1]
+                if password_input == self.password.get():
+                    success = True
+                else:
+                    succes = False
+            else:
+                success = False
+            cursor.close()
+        except sqlite3.Error as e:
+            print(e)
+        finally:
+            if sqlite_connection:
+                sqlite_connection.close()
+
+        if success:
+            if now_time < NOON:
+                greeting = 'Good morning'
+            elif now_time < EVENING:
+                greeting = 'Good day'
+            else:
+                greeting = 'Good evening'
+            message = '{}, {}!'.format(greeting, name)
+            messagebox.showinfo(title='Welcome to PyFlora Pots!', message=message)
+            self.root_login.destroy()
+            InterfaceMain().root.mainloop()
+
+        else:
+            message = 'Login credentials are incorrect.'
+            messagebox.showerror(title='Unsuccesssful login', message=message)
+
+    def interface(self):
+        username_label = tk.Label(self.root_login, text='Username: ')
+        username_label.grid(row=0, column=0, padx=(30,0), pady=(10,30))
+
+        username_entry = tk.Entry(self.root_login, textvariable=self.username)
+        username_entry.grid(row=0, column=1, pady=(10,30))
+
+        password_label = tk.Label(self.root_login, text='Password: ')
+        password_label.grid(row=1, column=0, padx=(30,0), pady=(0,15))
+
+        password_entry = tk.Entry(self.root_login, textvariable=self.password,
+                                show='*')
+        password_entry.grid(row=1, column=1, pady=(0,15))
+
+        start_button = tk.Button(self.root_login, text='Login', command=self.login)
+        start_button.grid(row=2, columnspan=3, pady=5, ipadx=5, ipady=5)
+
+        exit_button = tk.Button(
+            self.root_login, text='Exit', command=self.root_login.destroy)
+        exit_button.grid(row=3, columnspan=3, pady=5, ipadx=5, ipady=5)
+
+        self.root_login.bind('<Return>', self.login)
+
 class InterfaceMain:
     def __init__(self):
         self.root = tk.Tk()
-        self.root.title("PyFlora Pots")
-        self.root.geometry('600x600')
+        self.root.title('PyFlora Pots')
+        self.root.geometry('510x650')
 
         self.create_buttons()
 
@@ -36,16 +124,16 @@ class InterfaceMain:
         HEADER = 5
         
         logout_button = tk.Button(self.root, text="Log Out",
-                                command=self.root.destroy)
+                                command=self.logout)
         logout_button.grid(row=0, column=1, pady=(0, 30), ipadx=5, ipady=5)
 
         lexicon_button = tk.Button(self.root, text='Manage Lexicon',
                             command=self.launch_InterfaceManageLexicon)
-        lexicon_button.grid(row=0, column=4, pady=(0, 30), ipadx=5, ipady=5)
+        lexicon_button.grid(row=0, column=3, pady=(0, 30), ipadx=5, ipady=5)
 
         account_button = tk.Button(self.root, text="User Account",
                             command=self.launch_InterfaceUserAccount)
-        account_button.grid(row=0, column=5, pady=(0, 30), ipadx=5, ipady=5)
+        account_button.grid(row=0, column=4, pady=(0, 30), ipadx=5, ipady=5)
 
         # Defining and arranging buttons for each PyFlora pot
         
@@ -116,8 +204,11 @@ class InterfaceMain:
         add_button.grid(row=button_row + 1 + HEADER, column=1, columnspan=2, pady=30, ipadx=10, ipady=10)
 
         sync_button = tk.Button(self.root, text="Sync all pots", command=self.sync)
-        sync_button.grid(row=button_row + 1 + HEADER, column=3, columnspan=2, pady=30, ipadx=10, ipady=10)
+        sync_button.grid(row=button_row + 2 + HEADER, column=1, columnspan=4, pady=30, ipadx=10, ipady=10)
 
+    def logout(self):
+        self.root.destroy()
+        InterfaceLogin().root_login.mainloop()
 
     def launch_InterfaceUserAccount(self):
         InterfaceUserAccount(self.root)
@@ -150,4 +241,5 @@ class InterfaceMain:
         self.retrieve_data()
         self.create_buttons()
 
-InterfaceMain().root.mainloop()
+#InterfaceMain().root.mainloop()
+InterfaceLogin().root_login.mainloop()
