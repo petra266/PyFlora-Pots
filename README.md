@@ -14,8 +14,7 @@ Python packages:
 * Pillow
 
 ## Usage
-1. Open `MAIN.py` in Visual Studio Code.
-2. Run with Ctrl + F5.
+1. Run `MAIN.py`.
 
 The script will automatically create the necessary databases the application requires if they do not already exist.
 
