@@ -3,6 +3,7 @@ import sqlite3
 from tkinter import messagebox
 from tkinter import filedialog
 from PIL import Image, ImageTk
+import os
 
 
 class InterfaceManageLexicon:
@@ -157,8 +158,10 @@ class InterfaceManageLexicon:
             self.interface_functions()
             
     def erase_plant(self):
-        ''' Deletes selected plant from the lexicon and PyFlora pots if plant selected'''
-        
+        ''' Deletes selected plant from the lexicon,
+          PyFlora pots with the erased plant
+          and plant image from the Images folder'''
+
         if self.plant_to_erase.get() != self.DEFAULT_PLANT:
            
            # delete from the lexicon
@@ -186,11 +189,19 @@ class InterfaceManageLexicon:
                                         parent=self.toplevel_manage_lexicon)  
 
                 except sqlite3.Error as e:
-                    print('Data retrieving unsucessful. Error: ', e)
-                    messagebox.showerror(title='Error in retrieving data!',
-                                        message='Data retrieving unsucessful. Error: ' + str(e) + "\nPlease restart the application",
+                    print('Data deleting unsucessful. Error: ', e)
+                    messagebox.showerror(title='Error in deleting data!',
+                                        message='Data deletion unsucessful. Error: ' + str(e) + "\nPlease restart the application",
                                         parent=self.toplevel_manage_lexicon) 
-                
+                    
+                try:
+                    file_name = f'{self.plant_to_erase.get()}.jpg'
+                    image_path = os.path.join('Images', file_name)
+                    os.remove(image_path)
+                except FileNotFoundError:
+                    print('Deleting unsuccessful. File not found.')
+                except Exception as e:
+                    print('Image deleting unsucessful. Error: ', e)
 
             except sqlite3.Error as e:
                 print('Data retrieving unsucessful. Error: ', e)
@@ -244,6 +255,10 @@ class InterfaceManageLexicon:
         self.optimal_light_input = tk.StringVar()
         self.optimal_temperature_input = tk.StringVar()
 
+        # instructions label
+        instructions_label = tk.Label(self.toplevel_manage_lexicon, text='Input the following information:')
+        instructions_label.grid(row=0, column=1, columnspan=2)
+        
         # plant name
         name_label = tk.Label(self.toplevel_manage_lexicon, text='Name: ')
         name_label.grid(row=1, column=1)
@@ -317,7 +332,7 @@ class InterfaceManageLexicon:
 
         # add plant
         add_plant_button = tk.Button(self.toplevel_manage_lexicon, text="Add plant", command=self.add_plant) 
-        add_plant_button.grid(row=20, column=2)
+        add_plant_button.grid(row=20, column=2, pady=(0, 30))
 
         # remove plant 
         remove_label = tk.Label(self.toplevel_manage_lexicon,
@@ -332,4 +347,4 @@ class InterfaceManageLexicon:
         erase_plant_button.grid(row=50, column=3)        
 
         back_button = tk.Button(self.toplevel_manage_lexicon, text="Back", command=self.toplevel_manage_lexicon.destroy)
-        back_button.grid(row=1000, column=1, columnspan=2)
+        back_button.grid(row=0, column=0, pady=(0, 30))

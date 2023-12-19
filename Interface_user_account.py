@@ -7,7 +7,7 @@ class InterfaceUserAccount:
     def __init__(self, root):
         self.toplevel_user_account = tk.Toplevel(root)
         self.toplevel_user_account.title("User account details")
-        self.toplevel_user_account.geometry('1200x800')
+        self.toplevel_user_account.geometry('600x400')
 
         # retrieve user inforamtion
         self.USER_INFO = self.retrieve_user_info()
@@ -50,7 +50,7 @@ class InterfaceUserAccount:
         username_entry.grid(row=2, column=2)
 
         save_button = tk.Button(self.toplevel_user_account, text='Save user details', command=self.save_changes)
-        save_button.grid(row=3, column=1, columnspan=2)
+        save_button.grid(row=3, column=1, columnspan=2, pady=(0, 30), ipadx=5, ipady=5)
 
         password_label = tk.Label(self.toplevel_user_account, text='Password: ')
         password_label.grid(row=4, column=1)
@@ -62,7 +62,10 @@ class InterfaceUserAccount:
         show_password_button.grid(row=4, column=3)
 
         change_password_button = tk.Button(self.toplevel_user_account, text='Change password', command=self.change_password)
-        change_password_button.grid(row=5, column=1, columnspan=2)
+        change_password_button.grid(row=5, column=1, columnspan=2, ipadx=5, ipady=5)
+
+        back_button = tk.Button(self.toplevel_user_account, text="Back", command=self.toplevel_user_account.destroy)
+        back_button.grid(row=0, column=0, pady=(0, 30))
 
     def retrieve_user_info(self):
         """ Retrieve user data from the Database_users and return it as a dictionary"""
@@ -127,6 +130,9 @@ class InterfaceUserAccount:
                     cursor = sql_connection.cursor()
                     cursor.execute(QUERY_UPDATE_USER)
                     print("User information updated.")
+                    messagebox.showinfo(title='User data',
+                                    message='User data has been successfully updated!',
+                                    parent=self.toplevel_user_account)
 
             except sqlite3.Error as e:
                 print('Data update unsucessful. Error: ', e)
@@ -141,7 +147,7 @@ class InterfaceUserAccount:
         if not self.password_visible:
             self.password.set(self.USER_INFO['password'])
             self.password_visible = True
-            self.show_password_text.set('Hide password')
+            self.show_password_text.set('Show password')
 
         else:
             if self.password.get() == self.USER_INFO['password']:
@@ -179,6 +185,10 @@ class InterfaceUserAccount:
                     cursor = sql_connection.cursor()
                     cursor.execute(QUERY_UPDATE_PASSWORD)
                     print("Password updated.")
+                    self.USER_INFO['password'] = self.password.get()
+                    messagebox.showinfo(title='User data',
+                                    message='Password has been successfully updated!',
+                                    parent=self.toplevel_user_account)
 
             except sqlite3.Error as e:
                 print('Data update unsucessful. Error: ', e)

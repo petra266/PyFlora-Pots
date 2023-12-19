@@ -12,7 +12,7 @@ class InterfaceAddPots:
     def __init__(self, root):
         self.toplevel_add_pots = tk.Toplevel(root)
         self.toplevel_add_pots.title("PyFlora Pots - Let's plant!")
-        self.toplevel_add_pots.geometry('1200x800')
+        self.toplevel_add_pots.geometry('400x300')
         self.interface_elements()
 
     def get_all_known_plant_names(self):
@@ -147,24 +147,24 @@ class InterfaceAddPots:
 
         pot_name_label = tk.Label(
             self.toplevel_add_pots, text="Give this pot a name:")
-        pot_name_label.grid(row=1, column=1)
+        pot_name_label.grid(row=1, column=1, padx=5, pady=5)
 
         entry_pot_name = tk.Entry(
             self.toplevel_add_pots, textvariable=self.new_pot)
-        entry_pot_name.grid(row=1, column=2)
+        entry_pot_name.grid(row=1, column=2, padx=5, pady=5)
 
         plant_label = tk.Label(self.toplevel_add_pots,
                                text="Choose a plant to plant:")
-        plant_label.grid(row=2, column=1)
+        plant_label.grid(row=2, column=1, padx=5, pady=5)
 
         plant_menu = tk.OptionMenu(
             self.toplevel_add_pots, self.chosen_plant, *all_known_plant_names)
-        plant_menu.grid(row=2, column=2)
+        plant_menu.grid(row=2, column=2, padx=5, pady=5)
 
         add_pot_button = tk.Button(
             self.toplevel_add_pots, text="Let's plant!!", command=self.add_new_pot)
-        add_pot_button.grid(row=3, columnspan=3)
+        add_pot_button.grid(row=3, columnspan=3, pady=(30, 0))
 
         back_button = tk.Button(self.toplevel_add_pots, text="Back",
                                 command=self.toplevel_add_pots.destroy)
-        back_button.grid(row=1000, columnspan=3)
+        back_button.grid(row=0, column=0, pady=(0,30))

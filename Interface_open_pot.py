@@ -5,6 +5,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.ticker import MaxNLocator
 from tkinter import messagebox
 from PIL import Image, ImageTk
+import os
 
 import sqlite3
 
@@ -18,7 +19,7 @@ class InterfaceOpenPot:
     def __init__(self, root):
         self.toplevel_open_pot = tk.Toplevel(root)
         self.toplevel_open_pot.title("PyFlora Pots - " + PyFloraPot.SELECTED_POT)
-        self.toplevel_open_pot.geometry('1200x600')
+        self.toplevel_open_pot.geometry('1400x800')
         
         self.retrieve_pot_info()
 
@@ -213,7 +214,7 @@ class InterfaceOpenPot:
         self.ax1.plot(self.all_axes['all_no_measurements'], self.all_axes['temperature_values'], label='Temperature')
 
         self.ax1.set_xlabel('Number of measurement', fontsize=7.5)
-        self.ax1.set_ylabel('Temperature in C', fontsize=7.5)
+        self.ax1.set_ylabel('Temperature in °C', fontsize=7.5)
 
         self.ax1.set_title('Temperature Measurements', fontsize=8)
         self.ax1.tick_params(axis='both', which='both', labelsize=6)
@@ -256,12 +257,11 @@ class InterfaceOpenPot:
         self.ax3.pie(salinity_values_groups)
 
         self.ax3.pie(salinity_values_groups, 
-                     labels=['Salinity within Ceiling', 'Salinity over Ceiling'], 
-                     colors=['green', 'darkred'], 
+                     labels=['Salinity \nwithin Ceiling', 'Salinity \nover Ceiling'], 
+                     colors=['green', 'darkred'], textprops={'fontsize': 7},
                      autopct='%1.1f%%', startangle=90)
 
         self.ax3.set_title('Salinity Measurements', fontsize=8)
-        self.ax3.tick_params(axis='both', which='both', labelsize=6)
         self.canvas3.draw()
 
     def interface_plant_attributes(self):
@@ -335,14 +335,14 @@ class InterfaceOpenPot:
 
     def interface_functions(self):
         sync_button = tk.Button(self.toplevel_open_pot, text="Sync only this pot", command=self.sync)
-        sync_button.grid(row=999, column=1)
+        sync_button.grid(row=999, column=1, columnspan=2, padx=15, pady=15, ipadx=5, ipady=5)
 
         complete_actions_button = tk.Button(self.toplevel_open_pot, text="Complete recommended actions", command=self.complete_actions)
-        complete_actions_button.grid(row=999, column=2)
+        complete_actions_button.grid(row=999, column=3, columnspan=2, padx=15, pady=15, ipadx=5, ipady=5)
 
         delete_button = tk.Button(self.toplevel_open_pot, text="Remove pot...", command=self.delete_pot)
-        delete_button.grid(row=1000, column=2)
+        delete_button.grid(row=0, column=3, columnspan=2, pady=(0,30))
 
         back_button = tk.Button(self.toplevel_open_pot, text="Back",
                                 command=self.toplevel_open_pot.destroy)
-        back_button.grid(row=1000, column=0)
+        back_button.grid(row=0, column=0, pady=(0,30))
