@@ -11,7 +11,7 @@ Python packages:
 * beautifulsoup4
 * matplotlib
 * pandas
-* PIL
+* Pillow
 
 ## Usage
 1. Open `MAIN.py` in Visual Studio Code.
