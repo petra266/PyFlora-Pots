@@ -64,20 +64,31 @@ class PyFloraPot:
 
     def webscrape_temperature(self, url):
         ''' Returns the value of temperature from the provided url '''
-        r = requests.get(url)
-        data = r.text
-        soup = BeautifulSoup(data, 'html.parser')
+        temperature = None
+
         try:
-            container = soup.find('div', class_='location-info block-01')
-            temperature = container.find('li', class_='temp').find(
-                'span', class_='val').text
-            temperature = int(temperature[:-1])
-            print('Temperature successfully webscraped.')
-            return True, temperature
-        except AttributeError as e:
-            print(
-                f'Unable to webscrape temperature due to error: {e}. Temperature will be randomly generated.')
+            r = requests.get(url)
+            data = r.text
+            soup = BeautifulSoup(data, 'html.parser')
+            
+
+            try:
+                container = soup.find('div', class_='location-info block-01')
+                temperature = container.find('li', class_='temp').find(
+                    'span', class_='val').text
+                temperature = int(temperature[:-1])
+                print('Temperature successfully webscraped.')
+                return True, temperature
+            
+            except AttributeError as e:
+                print(
+                    f'Unable to webscrape temperature due to error: {e}. Temperature will be randomly generated.')
+                return False, temperature
+
+        except requests.exceptions.RequestException as e:
+            print(f'Error making web request: {e}. Temperature will be randomly generated.')
             return False, temperature
+
 
     def generate_measurements(self):
         ''' Generate a value for each pot attribute measured '''
@@ -197,7 +208,6 @@ class PyFloraPot:
         self.get_dataframe_for_all_pots(PyFloraPot)
         
         PyFloraPot.list_pots = list(PyFloraPot.df['pot_name'])
-        print('PRINTING 1:   ', PyFloraPot.list_pots)
 
         DB_NAME = 'Database_PyFlora_Pots.db'      
         for pot in PyFloraPot.list_pots:
@@ -205,7 +215,6 @@ class PyFloraPot:
                 # get number of measurement for the selected pot 
                 # compare it to the highest measurement to see whether new column is necessary
                 new_measurement_no = PyFloraPot.df.loc[PyFloraPot.df['pot_name'] == pot, 'no_measurements'].values[0] + 1
-                print('PRINTING NEW MEASUREMENT:    ', new_measurement_no)
                 if new_measurement_no > PyFloraPot.max_no_measurements:
                     self.create_new_measurement_columns(PyFloraPot, DB_NAME, new_measurement_no)
                 
