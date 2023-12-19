@@ -1,7 +1,7 @@
 """Creating the PyFlora Pots database"""
 
-import os
 import sqlite3
+import sys
 
 DB_NAME = 'Database_PyFlora_Pots.db'
 
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS Database_PyFlora_Pots (
     );
 '''
 
-# Create the empty PyPots database
+# Create the empty PyFlore Pots database
 try:
     sqlite_connection = sqlite3.connect(DB_NAME)
     cursor = sqlite_connection.cursor()
@@ -34,7 +34,7 @@ try:
 
 except sqlite3.Error as e:
     print("Execution unsuccessful. Error when creating the database: ", e)
-    SystemExit(1)
+    sys.exit(1)
 
 
 # Close the connection to the database

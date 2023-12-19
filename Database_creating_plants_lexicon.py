@@ -1,6 +1,7 @@
 """Creating the plants lexicon with 10 plants"""
 import os
 import sqlite3
+import sys
 
 def convert_image_to_blob(image_path):
     with open(image_path, 'rb') as file:
@@ -39,26 +40,7 @@ INSERT INTO Database_plants_lexicon
 optimal_ph, max_salinity, optimal_light, optimal_temperature, photo)
 VALUES (?, ?, ?, ?, ?, ?, ?)
 '''
-'''
-INSERT_DICT = [
-    {'plant_name': 'Basil (Ocimum basilicum)',
-     'optimal_humidity': 60,
-     'optimal_ph': 6,
-     'max_salinity': 2,
-     'optimal_light': 350,
-     'optimal_temperature': 24,
-     'photo' : convert_image_to_blob(os.path.join(IMAGES_FOLDER, 'Basil (Ocimum basilicum).jpg'))
-     },
-    {'plant_name': 'Hibiscus (Hibiscus rosa-sinensis)',
-     'optimal_humidity': 65,
-     'optimal_ph': 6,
-     'max_salinity': 2,
-     'optimal_light': 350,
-     'optimal_temperature': 24,
-     'photo' : convert_image_to_blob(os.path.join(IMAGES_FOLDER, 'Hibiscus (Hibiscus rosa-sinensis).jpg'))
-     },
-]
-'''
+
 INSERT_DICT = [
     {'plant_name': 'Basil (Ocimum basilicum)',
      'optimal_humidity': 60,
@@ -161,8 +143,8 @@ except sqlite3.Error as e:
     print("Execution unsuccessful. Error when creating the database: ", e)
     SystemExit(1)
 
-
 # Insert plants into the lexicon
+
 try:
     for plant in INSERT_LIST:
         cursor.execute(QUERY_INSERT, plant)
@@ -170,11 +152,12 @@ try:
     print("Successfully inserted into the database.")
     cursor.close()
 
+    table_exists = 1
+
 except sqlite3.Error as e:
     print("Error when inserting into the database: ", e)
-    SystemExit(1)
 
-# Close the connection to the database
+    # Close the connection to the database
 finally:
     if sqlite_connection:
         sqlite_connection.close()

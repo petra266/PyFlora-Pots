@@ -1,6 +1,7 @@
 """Creating the user database with 1 user"""
 
 import sqlite3
+import sys
 
 DB_NAME = 'Database_users.db'
 
@@ -9,7 +10,7 @@ CREATE TABLE IF NOT EXISTS Database_users (
     id INTEGER PRIMARY KEY,
     firstname VARCHAR(50) NOT NULL,
     lastname VARCHAR(50) NOT NULL,
-    username VARCHAR(50) NOT NULL,
+    username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(50) NOT NULL
 );
 '''
@@ -31,7 +32,7 @@ try:
 
 except sqlite3.Error as e:
     print("Execution unsuccessful. Error when creating the database: ", e)
-    SystemExit(1)
+    sys.exit(1)
 
 
 # Insert users into the database
@@ -44,7 +45,6 @@ try:
 
 except sqlite3.Error as e:
     print("Error when inserting into the database: ", e)
-    SystemExit(1)
 
 
 # Close the connection to the database
