@@ -14,7 +14,8 @@ Python packages:
 * Pillow
 
 ## Usage
-1. Run `MAIN.py`.
+1. Run `Install_dependencies.bat`. 
+2. Run `MAIN.py`.
 
 The script will automatically create the necessary databases the application requires if they do not already exist.
 
